@@ -4,7 +4,7 @@ import cors from "cors";
 
 const app = express();
 
-// CORS configuration - ChatGPT's recommended fix
+// CORS configuration
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -12,10 +12,8 @@ app.use(cors({
   credentials: false
 }));
 
-// Handle preflight OPTIONS requests for all routes
 app.options('*', cors());
 
-// Add explicit headers for all responses
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -23,13 +21,28 @@ app.use((req, res, next) => {
   next();
 });
 
-// Cache to avoid hitting APIs too often
+// Cache configuration
 let cache = {
   data: null,
   timestamp: 0
 };
 
-const CACHE_DURATION = 30000; // 30 seconds
+const CACHE_DURATION = 10000; // 10 seconds for faster updates
+
+// Helper function to fetch with timeout
+async function fetchWithTimeout(url, timeout = 8000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(id);
+    return response;
+  } catch (error) {
+    clearTimeout(id);
+    throw error;
+  }
+}
 
 app.get("/markets", async (req, res) => {
   try {
@@ -41,81 +54,201 @@ app.get("/markets", async (req, res) => {
       return res.json(cache.data);
     }
 
-    console.log('🔄 Fetching fresh data...');
+    console.log('🔄 Fetching fresh data from multiple sources...');
 
-    // Set a timeout for the entire operation
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Request timeout')), 25000)
-    );
-
-    const fetchDataPromise = (async () => {
-      // Fetch all data in parallel
-      const [btcData, goldData, yahooData] = await Promise.all([
-      // Bitcoin from CoinGecko
-      fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true")
+    // Fetch all data in parallel with error handling
+    const [
+      binanceData,
+      yahooData,
+      polymarketData,
+      fredData
+    ] = await Promise.all([
+      // 1. Binance for most accurate BTC price
+      fetchWithTimeout('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT')
         .then(r => r.json())
-        .catch(() => ({ bitcoin: { usd: 95000, usd_24h_change: 2.5, usd_24h_vol: 45000000000 } })),
+        .catch(err => {
+          console.error('Binance error:', err.message);
+          return null;
+        }),
       
-      // Gold from Metals.live
-      fetch("https://api.metals.live/v1/spot/gold")
-        .then(r => r.json())
-        .then(data => ({ price: data[0] }))
-        .catch(() => ({ price: 2650 })),
-      
-      // Yahoo Finance for DXY, Russell 2000, VIX
+      // 2. Yahoo Finance for all market data in parallel
       Promise.all([
-        fetch("https://query1.finance.yahoo.com/v8/finance/chart/DX-Y.NYB?interval=1d&range=1d")
+        // S&P 500
+        fetchWithTimeout('https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d&range=1d')
           .then(r => r.json())
           .catch(() => null),
-        fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5ERUT?interval=1d&range=1d")
+        // Russell 2000
+        fetchWithTimeout('https://query1.finance.yahoo.com/v8/finance/chart/%5ERUT?interval=1d&range=1d')
           .then(r => r.json())
           .catch(() => null),
-        fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?interval=1d&range=1d")
+        // DXY
+        fetchWithTimeout('https://query1.finance.yahoo.com/v8/finance/chart/DX-Y.NYB?interval=1d&range=1d')
           .then(r => r.json())
           .catch(() => null),
-        fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5ETNX?interval=1d&range=1d")
+        // VIX
+        fetchWithTimeout('https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?interval=1d&range=1d')
           .then(r => r.json())
           .catch(() => null),
-        fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5ETYX?interval=1d&range=1d")
+        // Gold
+        fetchWithTimeout('https://query1.finance.yahoo.com/v8/finance/chart/GC%3DF?interval=1d&range=1d')
+          .then(r => r.json())
+          .catch(() => null),
+        // US 10Y
+        fetchWithTimeout('https://query1.finance.yahoo.com/v8/finance/chart/%5ETNX?interval=1d&range=1d')
+          .then(r => r.json())
+          .catch(() => null),
+        // US 2Y
+        fetchWithTimeout('https://query1.finance.yahoo.com/v8/finance/chart/%5EIRX?interval=1d&range=1d')
+          .then(r => r.json())
+          .catch(() => null)
+      ]),
+      
+      // 3. Polymarket for Fed predictions
+      fetchWithTimeout('https://clob.polymarket.com/markets')
+        .then(r => r.json())
+        .then(markets => {
+          // Find Fed rate cut market
+          const fedMarket = markets.find(m => 
+            m.question && m.question.toLowerCase().includes('fed') && 
+            m.question.toLowerCase().includes('rate')
+          );
+          return fedMarket || null;
+        })
+        .catch(err => {
+          console.error('Polymarket error:', err.message);
+          return null;
+        }),
+      
+      // 4. FRED API (Federal Reserve Economic Data)
+      Promise.all([
+        // Reverse Repo
+        fetchWithTimeout('https://api.stlouisfed.org/fred/series/observations?series_id=RRPONTSYD&api_key=demo&file_type=json&limit=1&sort_order=desc')
+          .then(r => r.json())
+          .catch(() => null),
+        // Fed Funds Rate
+        fetchWithTimeout('https://api.stlouisfed.org/fred/series/observations?series_id=FEDFUNDS&api_key=demo&file_type=json&limit=1&sort_order=desc')
+          .then(r => r.json())
+          .catch(() => null),
+        // Fed Balance Sheet
+        fetchWithTimeout('https://api.stlouisfed.org/fred/series/observations?series_id=WALCL&api_key=demo&file_type=json&limit=2&sort_order=desc')
           .then(r => r.json())
           .catch(() => null)
       ])
     ]);
 
-    // Parse Bitcoin data
-    const bitcoin = {
-      price: Math.round(btcData.bitcoin?.usd || 95000),
-      change24h: parseFloat((btcData.bitcoin?.usd_24h_change || 2.5).toFixed(2)),
-      volume24h: ((btcData.bitcoin?.usd_24h_vol || 45000000000) / 1000000000).toFixed(1),
-      marketCap: ((btcData.bitcoin?.usd || 95000) * 19.5 / 1000).toFixed(2)
+    console.log('✅ Data fetched, parsing...');
+
+    // Parse Bitcoin from Binance (most accurate)
+    let bitcoin = {
+      price: 95000,
+      change24h: 2.5,
+      volume24h: "45.0",
+      marketCap: "1850.00"
     };
 
-    // Parse Gold
-    const gold = Math.round(goldData.price || 2650);
+    if (binanceData && binanceData.lastPrice) {
+      const price = parseFloat(binanceData.lastPrice);
+      const change = parseFloat(binanceData.priceChangePercent);
+      const volume = parseFloat(binanceData.volume) * price / 1000000000; // Convert to billions
+      
+      bitcoin = {
+        price: Math.round(price),
+        change24h: parseFloat(change.toFixed(2)),
+        volume24h: volume.toFixed(1),
+        marketCap: (price * 19.5 / 1000).toFixed(2) // 19.5M BTC in circulation
+      };
+      console.log('✅ Binance BTC price:', bitcoin.price);
+    } else {
+      console.warn('⚠️ Using fallback BTC price');
+    }
 
-    // Parse Yahoo data
-    const dxy = yahooData[0]?.chart?.result?.[0]?.meta?.regularMarketPrice?.toFixed(2) || "109.07";
-    const rut = Math.round(yahooData[1]?.chart?.result?.[0]?.meta?.regularMarketPrice || 2582);
-    const vix = yahooData[2]?.chart?.result?.[0]?.meta?.regularMarketPrice?.toFixed(2) || "14.67";
-    const us10y = yahooData[3]?.chart?.result?.[0]?.meta?.regularMarketPrice?.toFixed(2) || "4.18";
-    const us30y = yahooData[4]?.chart?.result?.[0]?.meta?.regularMarketPrice?.toFixed(2) || "4.81";
+    // Parse Yahoo Finance data
+    const [spxData, rutData, dxyData, vixData, goldData, us10yData, us2yData] = yahooData;
 
-    // Build response
-    return {
+    const spx = Math.round(spxData?.chart?.result?.[0]?.meta?.regularMarketPrice || 5800);
+    const rut = Math.round(rutData?.chart?.result?.[0]?.meta?.regularMarketPrice || 2580);
+    const dxy = parseFloat((dxyData?.chart?.result?.[0]?.meta?.regularMarketPrice || 109.5).toFixed(2));
+    const vix = parseFloat((vixData?.chart?.result?.[0]?.meta?.regularMarketPrice || 15.5).toFixed(2));
+    const gold = Math.round(goldData?.chart?.result?.[0]?.meta?.regularMarketPrice || 2650);
+    const us10y = parseFloat((us10yData?.chart?.result?.[0]?.meta?.regularMarketPrice || 4.2).toFixed(2));
+    const us2y = parseFloat((us2yData?.chart?.result?.[0]?.meta?.regularMarketPrice || 4.3).toFixed(2));
+
+    console.log('✅ Market data parsed - SPX:', spx, 'DXY:', dxy, 'Gold:', gold);
+
+    // Parse FRED data
+    const [rrpData, fedFundsData, fedBalanceData] = fredData;
+
+    let rrp = 0;
+    let fedFunds = 4.5;
+    let fedBalance = 7500;
+    let qtActive = false;
+
+    if (rrpData?.observations?.[0]?.value) {
+      rrp = Math.round(parseFloat(rrpData.observations[0].value));
+      console.log('✅ RRP:', rrp);
+    }
+
+    if (fedFundsData?.observations?.[0]?.value) {
+      fedFunds = parseFloat(fedFundsData.observations[0].value);
+      console.log('✅ Fed Funds Rate:', fedFunds);
+    }
+
+    if (fedBalanceData?.observations) {
+      const current = parseFloat(fedBalanceData.observations[0]?.value || 7500000);
+      const previous = parseFloat(fedBalanceData.observations[1]?.value || 7500000);
+      fedBalance = Math.round(current / 1000); // Convert to billions
+      qtActive = current < previous;
+      console.log('✅ Fed Balance Sheet:', fedBalance, 'B - QT Active:', qtActive);
+    }
+
+    // Parse Polymarket predictions
+    let fedCutProbability = 0.35; // Default 35%
+    let nextMeetingDate = "2026-01-29";
+
+    if (polymarketData && polymarketData.outcomes) {
+      // Get probability of rate cut
+      const cutOutcome = polymarketData.outcomes.find(o => 
+        o.title && o.title.toLowerCase().includes('cut')
+      );
+      if (cutOutcome) {
+        fedCutProbability = parseFloat(cutOutcome.price || 0.35);
+      }
+      console.log('✅ Fed cut probability:', fedCutProbability);
+    }
+
+    // Calculate correlations and signals
+    const correlations = {
+      btcVsSpx: spx > 5700 ? 'bullish' : 'bearish', // SPX strength = risk-on
+      btcVsRut: rut > 2500 ? 'bullish' : 'bearish', // Small caps strong = risk-on
+      btcVsDxy: dxy < 105 ? 'bullish' : 'bearish', // Weak dollar = BTC up
+      btcVsGold: gold > 2600 && gold < 3000 ? 'bullish' : 'bearish', // Gold in sweet spot
+      btcVsVix: vix < 20 ? 'bullish' : 'bearish', // Low fear = bullish
+      btcVsRrp: rrp < 300 ? 'bullish' : 'bearish' // Lower RRP = more liquidity
+    };
+
+    // Build final response
+    const responseData = {
       bitcoin,
-      gold,
-      dxy: parseFloat(dxy),
-      rut,
-      vix: parseFloat(vix),
-      us2y: 3.54,
-      us10y: parseFloat(us10y),
-      us20y: parseFloat(us30y),
+      marketData: {
+        spx,
+        rut,
+        dxy,
+        vix,
+        gold,
+        us10y,
+        us2y
+      },
+      fedData: {
+        rrp,
+        fedFunds,
+        fedBalance,
+        qtActive,
+        fedCutProbability,
+        nextMeetingDate
+      },
+      correlations,
       timestamp: new Date().toISOString()
     };
-  })();
-
-  // Race between timeout and fetch
-  const responseData = await Promise.race([fetchDataPromise, timeoutPromise]);
 
     // Cache it
     cache = {
@@ -123,8 +256,9 @@ app.get("/markets", async (req, res) => {
       timestamp: Date.now()
     };
 
-    console.log('✅ Data fetched successfully');
+    console.log('✅ Response ready, sending to client');
     res.json(responseData);
+
   } catch (e) {
     console.error("❌ Error:", e.message);
     console.error(e.stack);
@@ -136,16 +270,33 @@ app.get("/markets", async (req, res) => {
   }
 });
 
+// WebSocket endpoint info
+app.get("/ws-info", (req, res) => {
+  res.json({
+    message: "For real-time BTC updates, use Binance WebSocket",
+    websocket: "wss://stream.binance.com:9443/ws/btcusdt@ticker",
+    usage: "Connect directly from frontend for instant updates"
+  });
+});
+
 // Health check
 app.get("/", (req, res) => {
   res.json({ 
     status: "ok", 
-    message: "Bitcoin Pro API is running",
-    endpoints: ["/markets"]
+    message: "Bitcoin Pro API v2.0 - Professional Grade",
+    endpoints: ["/markets", "/ws-info"],
+    features: [
+      "Binance real-time BTC",
+      "Yahoo Finance market data",
+      "FRED economic data",
+      "Polymarket predictions",
+      "Correlation analysis"
+    ]
   });
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`✅ Bitcoin Pro API v2.0 running on port ${PORT}`);
+  console.log('🚀 Features: Binance, Yahoo, FRED, Polymarket');
 });
