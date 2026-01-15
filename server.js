@@ -3,7 +3,25 @@ import fetch from "node-fetch";
 import cors from "cors";
 
 const app = express();
-app.use(cors());
+
+// CORS configuration - ChatGPT's recommended fix
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false
+}));
+
+// Handle preflight OPTIONS requests for all routes
+app.options('*', cors());
+
+// Add explicit headers for all responses
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
 
 // Cache to avoid hitting APIs too often
 let cache = {
@@ -15,13 +33,24 @@ const CACHE_DURATION = 30000; // 30 seconds
 
 app.get("/markets", async (req, res) => {
   try {
+    console.log('📊 Markets endpoint called');
+    
     // Return cached data if fresh
     if (cache.data && Date.now() - cache.timestamp < CACHE_DURATION) {
+      console.log('✅ Returning cached data');
       return res.json(cache.data);
     }
 
-    // Fetch all data in parallel
-    const [btcData, goldData, yahooData] = await Promise.all([
+    console.log('🔄 Fetching fresh data...');
+
+    // Set a timeout for the entire operation
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Request timeout')), 25000)
+    );
+
+    const fetchDataPromise = (async () => {
+      // Fetch all data in parallel
+      const [btcData, goldData, yahooData] = await Promise.all([
       // Bitcoin from CoinGecko
       fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true")
         .then(r => r.json())
@@ -72,17 +101,21 @@ app.get("/markets", async (req, res) => {
     const us30y = yahooData[4]?.chart?.result?.[0]?.meta?.regularMarketPrice?.toFixed(2) || "4.81";
 
     // Build response
-    const responseData = {
+    return {
       bitcoin,
       gold,
       dxy: parseFloat(dxy),
       rut,
       vix: parseFloat(vix),
-      us2y: 3.54, // Would need FRED API key for real-time
+      us2y: 3.54,
       us10y: parseFloat(us10y),
       us20y: parseFloat(us30y),
       timestamp: new Date().toISOString()
     };
+  })();
+
+  // Race between timeout and fetch
+  const responseData = await Promise.race([fetchDataPromise, timeoutPromise]);
 
     // Cache it
     cache = {
@@ -90,12 +123,15 @@ app.get("/markets", async (req, res) => {
       timestamp: Date.now()
     };
 
+    console.log('✅ Data fetched successfully');
     res.json(responseData);
   } catch (e) {
-    console.error("Error:", e);
+    console.error("❌ Error:", e.message);
+    console.error(e.stack);
     res.status(500).json({ 
       error: "Failed to fetch market data",
-      message: e.message 
+      message: e.message,
+      timestamp: new Date().toISOString()
     });
   }
 });
