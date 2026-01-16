@@ -4,13 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bitcoin Pro - Live Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
@@ -20,10 +15,7 @@
             padding: 20px;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1200px; margin: 0 auto; }
         
         .header {
             text-align: center;
@@ -31,490 +23,404 @@
             background: rgba(0,0,0,0.3);
             border-radius: 20px;
             margin-bottom: 25px;
-            border: 2px solid rgba(255,255,255,0.2);
         }
         
-        h1 { 
-            font-size: 2.8em; 
-            margin-bottom: 10px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        h2 { 
-            font-size: 1.6em; 
-            margin-bottom: 20px;
-            color: #fff;
-        }
+        h1 { font-size: 2.8em; margin-bottom: 10px; }
+        h2 { font-size: 1.5em; margin-bottom: 20px; }
         
         .status {
             display: inline-block;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 25px;
-            font-size: 0.95em;
+            font-size: 0.9em;
             font-weight: bold;
-            margin-top: 15px;
+            margin-top: 10px;
         }
         
-        .status.live { 
-            background: rgba(16, 185, 129, 0.3); 
-            border: 3px solid #10b981;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-        }
-        .status.connecting { 
-            background: rgba(245, 158, 11, 0.3); 
-            border: 3px solid #f59e0b; 
-        }
-        .status.error { 
-            background: rgba(239, 68, 68, 0.3); 
-            border: 3px solid #ef4444; 
-        }
+        .status.live { background: rgba(16, 185, 129, 0.3); border: 3px solid #10b981; }
+        .status.error { background: rgba(239, 68, 68, 0.3); border: 3px solid #ef4444; }
         
         .card {
             background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 25px;
-            border: 2px solid rgba(255,255,255,0.3);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         }
         
-        .bitcoin-price {
-            text-align: center;
-            font-size: 3.5em;
-            font-weight: bold;
-            color: #10b981;
-            margin: 25px 0;
-            text-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
-        }
-        
-        .change-24h {
-            text-align: center;
-            font-size: 1.8em;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        
-        .positive { color: #10b981; }
-        .negative { color: #ef4444; }
-        
-        .grid {
+        .stat-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 18px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
         }
         
         .stat-box {
-            background: rgba(255,255,255,0.12);
-            border-radius: 15px;
-            padding: 22px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
             text-align: center;
-            border: 2px solid transparent;
-            transition: all 0.3s;
         }
         
-        .stat-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-        
-        .stat-box.bullish {
-            border-color: #10b981;
+        .stat-box.highlight {
+            border: 2px solid #10b981;
             background: rgba(16, 185, 129, 0.2);
         }
         
-        .stat-box.bearish {
-            border-color: #ef4444;
-            background: rgba(239, 68, 68, 0.2);
-        }
-        
-        .stat-value {
-            font-size: 1.8em;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .stat-label {
-            font-size: 0.9em;
-            opacity: 0.9;
-            margin-bottom: 10px;
-        }
-        
-        .signal-badge {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.75em;
-            font-weight: bold;
-            margin-top: 8px;
-        }
-        
-        .signal-badge.bull { background: #10b981; color: white; }
-        .signal-badge.bear { background: #ef4444; color: white; }
-        
-        .overall-signal {
-            text-align: center;
-            padding: 50px;
-            background: rgba(0,0,0,0.35);
-            border-radius: 25px;
-            margin: 35px 0;
-            border: 3px solid rgba(255,255,255,0.2);
-        }
-        
-        .signal-emoji {
-            font-size: 6em;
-            margin-bottom: 25px;
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-        
-        .signal-text {
-            font-size: 3em;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        .signal-score {
-            font-size: 1.5em;
-            opacity: 0.95;
-        }
-        
-        .prediction-section {
-            background: rgba(0,0,0,0.25);
-            border-radius: 20px;
-            padding: 30px;
-            margin-top: 30px;
-            border: 2px solid rgba(255,255,255,0.2);
-        }
+        .stat-value { font-size: 1.8em; font-weight: bold; margin-bottom: 8px; }
+        .stat-label { font-size: 0.85em; opacity: 0.9; }
         
         .prediction-card {
-            background: rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.1);
             border-radius: 15px;
             padding: 25px;
-            margin-bottom: 18px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.3s;
         }
         
-        .prediction-card:hover {
-            transform: translateX(5px);
-            background: rgba(255,255,255,0.18);
+        .prediction-card.bullish { border-left: 5px solid #10b981; }
+        .prediction-card.bearish { border-left: 5px solid #ef4444; }
+        .prediction-card.neutral { border-left: 5px solid #f59e0b; }
+        
+        .macro-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
         }
         
-        .prediction-label {
-            font-size: 1.2em;
-            font-weight: bold;
+        .macro-box {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            border: 2px solid transparent;
         }
         
-        .prediction-value {
-            font-size: 2em;
-            font-weight: bold;
-            color: #10b981;
-        }
+        .macro-box.bullish { border-color: #10b981; background: rgba(16, 185, 129, 0.15); }
+        .macro-box.bearish { border-color: #ef4444; background: rgba(239, 68, 68, 0.15); }
         
-        .chart-container {
-            position: relative;
-            height: 350px;
-            margin-top: 25px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 15px;
-            padding: 20px;
-        }
-        
-        .info-box {
+        .fed-section {
             background: rgba(59, 130, 246, 0.2);
             border: 2px solid #3b82f6;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 25px 0;
-            font-size: 0.95em;
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 25px;
         }
         
-        @media (max-width: 768px) {
-            h1 { font-size: 2.2em; }
-            .bitcoin-price { font-size: 2.8em; }
-            .change-24h { font-size: 1.4em; }
-            .signal-text { font-size: 2em; }
-            .signal-emoji { font-size: 4em; }
+        .fed-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
         }
+        
+        .fed-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+        }
+        
+        button {
+            width: 100%;
+            background: rgba(16, 185, 129, 0.3);
+            border: 3px solid #10b981;
+            color: white;
+            padding: 18px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 25px;
+        }
+        
+        button:hover { background: rgba(16, 185, 129, 0.5); }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>🚀 Bitcoin Pro</h1>
-            <p style="font-size: 1.1em; opacity: 0.9; margin-top: 5px;">Real-Time Market Intelligence Dashboard</p>
-            <div id="statusBadge" class="status connecting">🟡 Connecting...</div>
-            <p style="font-size: 0.9em; margin-top: 15px; opacity: 0.8;">
+            <p style="font-size: 1.1em; margin: 5px 0;">Real-Time Market Intelligence</p>
+            <div id="statusBadge" class="status live">🟢 LIVE</div>
+            <p style="font-size: 0.85em; margin-top: 10px; opacity: 0.8;">
                 Last Update: <span id="lastUpdate">--</span>
             </p>
         </div>
 
         <div class="card">
-            <h2>⚡ Bitcoin Live Price</h2>
-            <div class="bitcoin-price" id="btcPrice">$--</div>
-            <div class="change-24h" id="btcChange">--</div>
-            <div style="text-align: center; font-size: 1em; opacity: 0.85; margin-top: 15px;">
-                24h Volume: <strong id="btcVolume">--</strong> | 
-                Market Cap: <strong id="btcMarketCap">--</strong>
+            <h2 style="text-align: center;">⚡ Bitcoin Live Price</h2>
+            <div style="text-align: center; font-size: 3.5em; font-weight: bold; color: #10b981; margin: 20px 0;" id="btcPrice">
+                $--
             </div>
-        </div>
-
-        <div class="overall-signal">
-            <div class="signal-emoji" id="signalEmoji">⚪</div>
-            <div class="signal-text" id="signalText">ANALYZING MARKETS...</div>
-            <div class="signal-score" id="signalScore">Score: --/100</div>
-            <div style="margin-top: 25px; font-size: 1.1em;">
-                <span style="color: #10b981; font-weight: bold;">✅ <span id="bullishCount">0</span> Bullish</span>
-                <span style="margin: 0 15px;">|</span>
-                <span style="color: #ef4444; font-weight: bold;">❌ <span id="bearishCount">0</span> Bearish</span>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>🌍 Macro Indicators</h2>
-            <div class="grid" id="macroGrid"></div>
-        </div>
-
-        <div class="prediction-section">
-            <h2>🔮 AI Price Predictions</h2>
-            <div style="font-size: 0.9em; opacity: 0.8; margin-bottom: 20px;">
-                Based on current volatility, momentum, and market trends
-            </div>
-            <div class="prediction-card">
-                <div class="prediction-label">📅 Tomorrow</div>
-                <div class="prediction-value" id="predTomorrow">$--</div>
-            </div>
-            <div class="prediction-card">
-                <div class="prediction-label">📊 Next Week</div>
-                <div class="prediction-value" id="predWeek">$--</div>
-            </div>
-            <div class="prediction-card">
-                <div class="prediction-label">📈 Next Month</div>
-                <div class="prediction-value" id="predMonth">$--</div>
+            <div class="stat-grid">
+                <div class="stat-box highlight">
+                    <div class="stat-value" id="btcChange">--</div>
+                    <div class="stat-label">24h Change</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="btcVolume">--</div>
+                    <div class="stat-label">24h Volume</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="btcMarketCap">--</div>
+                    <div class="stat-label">Market Cap</div>
+                </div>
             </div>
         </div>
 
         <div class="card">
-            <h2>📊 24h Price Movement</h2>
-            <div class="chart-container">
-                <canvas id="priceChart"></canvas>
+            <h2 style="text-align: center;">📅 Market Outlook</h2>
+            
+            <div id="dailyPrediction" class="prediction-card neutral">
+                <div>
+                    <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">DAILY (24h)</div>
+                    <div style="font-size: 2.5em; margin-bottom: 5px;">⚪</div>
+                    <div style="font-size: 1.5em; font-weight: bold;">LOADING...</div>
+                </div>
+                <div style="font-size: 2em; font-weight: bold;">--</div>
+            </div>
+
+            <div id="weeklyPrediction" class="prediction-card neutral">
+                <div>
+                    <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">WEEKLY (7 days)</div>
+                    <div style="font-size: 2.5em; margin-bottom: 5px;">⚪</div>
+                    <div style="font-size: 1.5em; font-weight: bold;">LOADING...</div>
+                </div>
+                <div style="font-size: 2em; font-weight: bold;">--</div>
+            </div>
+
+            <div id="monthlyPrediction" class="prediction-card neutral">
+                <div>
+                    <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">MONTHLY (30 days)</div>
+                    <div style="font-size: 2.5em; margin-bottom: 5px;">⚪</div>
+                    <div style="font-size: 1.5em; font-weight: bold;">LOADING...</div>
+                </div>
+                <div style="font-size: 2em; font-weight: bold;">--</div>
             </div>
         </div>
 
-        <div class="info-box">
-            <strong>💡 How It Works:</strong>
-            <p style="margin-top: 10px; line-height: 1.6;">
-                This dashboard analyzes Bitcoin price alongside key macro indicators (DXY, Gold, VIX, Russell 2000, Yields) 
-                to generate real-time bullish/bearish signals. Data updates every 5 seconds from Binance and Yahoo Finance.
-            </p>
+        <div class="card">
+            <h2>🌍 Macro Indicators (Live)</h2>
+            <div class="macro-grid">
+                <div id="spxBox" class="macro-box">
+                    <div style="font-size: 0.75em; opacity: 0.8; margin-bottom: 4px;">S&P 500</div>
+                    <div style="font-size: 1.5em; font-weight: bold;" id="spxValue">--</div>
+                    <div style="font-size: 0.7em; margin-top: 8px;" id="spxStatus">...</div>
+                </div>
+
+                <div id="dxyBox" class="macro-box">
+                    <div style="font-size: 0.75em; opacity: 0.8; margin-bottom: 4px;">DXY (Dollar)</div>
+                    <div style="font-size: 1.5em; font-weight: bold;" id="dxyValue">--</div>
+                    <div style="font-size: 0.7em; margin-top: 8px;" id="dxyStatus">...</div>
+                </div>
+
+                <div id="goldBox" class="macro-box">
+                    <div style="font-size: 0.75em; opacity: 0.8; margin-bottom: 4px;">Gold</div>
+                    <div style="font-size: 1.5em; font-weight: bold;" id="goldValue">--</div>
+                    <div style="font-size: 0.7em; margin-top: 8px;" id="goldStatus">...</div>
+                </div>
+
+                <div id="rutBox" class="macro-box">
+                    <div style="font-size: 0.75em; opacity: 0.8; margin-bottom: 4px;">Russell 2000</div>
+                    <div style="font-size: 1.5em; font-weight: bold;" id="rutValue">--</div>
+                    <div style="font-size: 0.7em; margin-top: 8px;" id="rutStatus">...</div>
+                </div>
+
+                <div id="vixBox" class="macro-box">
+                    <div style="font-size: 0.75em; opacity: 0.8; margin-bottom: 4px;">VIX (Fear)</div>
+                    <div style="font-size: 1.5em; font-weight: bold;" id="vixValue">--</div>
+                    <div style="font-size: 0.7em; margin-top: 8px;" id="vixStatus">...</div>
+                </div>
+
+                <div id="rrpBox" class="macro-box">
+                    <div style="font-size: 0.75em; opacity: 0.8; margin-bottom: 4px;">RRP (Liquidity)</div>
+                    <div style="font-size: 1.5em; font-weight: bold;" id="rrpValue">--</div>
+                    <div style="font-size: 0.7em; margin-top: 8px;" id="rrpStatus">...</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; margin-top: 20px; text-align: center;">
+                <div style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;">Environment Summary</div>
+                <div id="summaryText" style="font-size: 1.1em;">Analyzing markets...</div>
+            </div>
+        </div>
+
+        <div class="fed-section">
+            <h2>🏦 Federal Reserve Policy</h2>
+            <div class="fed-grid">
+                <div class="fed-box">
+                    <div style="opacity: 0.8; font-size: 0.85em;">Fed Funds Rate</div>
+                    <div style="font-size: 2em; font-weight: bold; margin: 10px 0;" id="fedRate">--%</div>
+                </div>
+                <div class="fed-box">
+                    <div style="opacity: 0.8; font-size: 0.85em;">Rate Cut Probability</div>
+                    <div style="font-size: 2em; font-weight: bold; margin: 10px 0; color: #3b82f6;" id="cutProb">--%</div>
+                    <div style="font-size: 0.75em; margin-top: 5px;">Next: <span id="nextMeeting">--</span></div>
+                </div>
+                <div class="fed-box">
+                    <div style="opacity: 0.8; font-size: 0.85em;">Balance Sheet</div>
+                    <div style="font-size: 2em; font-weight: bold; margin: 10px 0;" id="fedBalance">$--B</div>
+                    <div id="qtStatus" style="font-size: 0.85em; padding: 5px 10px; border-radius: 15px; display: inline-block; margin-top: 5px;">--</div>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="fetchMarketData()">🔄 Refresh Now</button>
+
+        <div style="text-align: center; padding: 25px; opacity: 0.7; font-size: 0.85em;">
+            <p>📊 Auto-updates every 5 seconds</p>
+            <p style="font-size: 0.8em; margin-top: 10px;">⚠️ Not financial advice</p>
         </div>
     </div>
 
     <script>
         const BACKEND_URL = "https://bitcoin-pro-backend.onrender.com";
-        let priceChart = null;
-        let priceHistory = [];
 
-        function initChart() {
-            const ctx = document.getElementById("priceChart").getContext("2d");
-            priceChart = new Chart(ctx, {
-                type: "line",
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: "Bitcoin Price",
-                        data: [],
-                        borderColor: "#10b981",
-                        backgroundColor: "rgba(16, 185, 129, 0.1)",
-                        tension: 0.4,
-                        fill: true,
-                        borderWidth: 3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { 
-                            display: true,
-                            labels: { color: "white", font: { size: 14 } }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            ticks: { color: "white", font: { size: 12 } },
-                            grid: { color: "rgba(255,255,255,0.1)" }
-                        },
-                        x: {
-                            ticks: { color: "white", font: { size: 10 } },
-                            grid: { color: "rgba(255,255,255,0.1)" }
-                        }
-                    }
-                }
-            });
-        }
-
-        function updateChart(price) {
-            const time = new Date().toLocaleTimeString();
-            priceHistory.push({ time, price });
+        function calculatePrediction(price, change, days) {
+            const volatility = Math.abs(change) / 100;
+            const trend = change > 0 ? 1 : -1;
+            const prediction = price * (1 + (trend * volatility * days * (Math.random() * 0.3 + 0.7)));
+            const pctChange = ((prediction - price) / price) * 100;
             
-            if (priceHistory.length > 20) {
-                priceHistory.shift();
-            }
-
-            priceChart.data.labels = priceHistory.map(p => p.time);
-            priceChart.data.datasets[0].data = priceHistory.map(p => p.price);
-            priceChart.update("none");
-        }
-
-        function calculateSignal(data) {
-            let bullishCount = 0;
-            let bearishCount = 0;
-
-            if (data.dxy < 100) bullishCount++; else bearishCount++;
-            if (data.gold < 3000) bullishCount++; else bearishCount++;
-            if (data.vix < 20) bullishCount++; else bearishCount++;
-            if (data.rut > 2500) bullishCount++; else bearishCount++;
-            if (data.bitcoin.change24h > 0) bullishCount++; else bearishCount++;
-
-            const score = (bullishCount - bearishCount) * 10;
-
-            let emoji, text, color;
-            if (score > 30) {
-                emoji = "🚀"; text = "VERY BULLISH"; color = "#10b981";
-            } else if (score > 15) {
-                emoji = "📈"; text = "BULLISH"; color = "#10b981";
-            } else if (score > -15) {
-                emoji = "⏸️"; text = "NEUTRAL"; color = "#f59e0b";
-            } else if (score > -30) {
-                emoji = "📉"; text = "BEARISH"; color = "#ef4444";
-            } else {
-                emoji = "⚠️"; text = "VERY BEARISH"; color = "#ef4444";
-            }
-
-            return { emoji, text, color, score, bullishCount, bearishCount };
-        }
-
-        function generatePredictions(currentPrice, change24h) {
-            const volatility = Math.abs(change24h) / 100;
-            const trend = change24h > 0 ? 1 : -1;
-
-            const tomorrow = currentPrice * (1 + (trend * volatility * (Math.random() * 0.5 + 0.5)));
-            const week = currentPrice * (1 + (trend * volatility * 7 * (Math.random() * 0.3 + 0.7)));
-            const month = currentPrice * (1 + (trend * volatility * 30 * (Math.random() * 0.2 + 0.8)));
-
-            return {
-                tomorrow: Math.round(tomorrow),
-                week: Math.round(week),
-                month: Math.round(month)
-            };
+            let sentiment, emoji, className;
+            if (pctChange > 5) { sentiment = "VERY BULLISH"; emoji = "🚀"; className = "bullish"; }
+            else if (pctChange > 0) { sentiment = "BULLISH"; emoji = "📈"; className = "bullish"; }
+            else if (pctChange > -5) { sentiment = "BEARISH"; emoji = "📉"; className = "bearish"; }
+            else { sentiment = "VERY BEARISH"; emoji = "⚠️"; className = "bearish"; }
+            
+            return { price: Math.round(prediction), sentiment, emoji, className };
         }
 
         async function fetchMarketData() {
             try {
-                document.getElementById("statusBadge").className = "status connecting";
-                document.getElementById("statusBadge").textContent = "🟡 Fetching...";
+                document.getElementById("statusBadge").className = "status live";
+                document.getElementById("statusBadge").textContent = "🟢 LIVE";
 
-                const response = await fetch(`${BACKEND_URL}/markets`, {
-                    method: "GET",
-                    headers: { "Accept": "application/json" },
-                    cache: "no-cache"
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
+                const response = await fetch(`${BACKEND_URL}/markets`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 const data = await response.json();
 
-                document.getElementById("statusBadge").className = "status live";
-                document.getElementById("statusBadge").textContent = "🟢 LIVE";
                 document.getElementById("lastUpdate").textContent = new Date().toLocaleTimeString();
 
+                // Bitcoin
                 document.getElementById("btcPrice").textContent = "$" + data.bitcoin.price.toLocaleString();
-                
                 const changeEl = document.getElementById("btcChange");
-                const change = data.bitcoin.change24h;
-                changeEl.textContent = (change > 0 ? "▲ +" : "▼ ") + change + "% (24h)";
-                changeEl.className = "change-24h " + (change >= 0 ? "positive" : "negative");
-
+                changeEl.textContent = (data.bitcoin.change24h > 0 ? "+" : "") + data.bitcoin.change24h + "%";
+                changeEl.style.color = data.bitcoin.change24h >= 0 ? "#10b981" : "#ef4444";
                 document.getElementById("btcVolume").textContent = "$" + data.bitcoin.volume24h + "B";
                 document.getElementById("btcMarketCap").textContent = "$" + data.bitcoin.marketCap + "T";
 
-                updateChart(data.bitcoin.price);
+                // Predictions
+                const daily = calculatePrediction(data.bitcoin.price, data.bitcoin.change24h, 1);
+                const weekly = calculatePrediction(data.bitcoin.price, data.bitcoin.change24h, 7);
+                const monthly = calculatePrediction(data.bitcoin.price, data.bitcoin.change24h, 30);
 
-                const signal = calculateSignal(data);
-                document.getElementById("signalEmoji").textContent = signal.emoji;
-                document.getElementById("signalText").textContent = signal.text;
-                document.getElementById("signalText").style.color = signal.color;
-                document.getElementById("signalScore").textContent = 
-                    "Score: " + (signal.score > 0 ? "+" : "") + signal.score + "/100";
-                document.getElementById("bullishCount").textContent = signal.bullishCount;
-                document.getElementById("bearishCount").textContent = signal.bearishCount;
-
-                const macroGrid = document.getElementById("macroGrid");
-                macroGrid.innerHTML = `
-                    <div class="stat-box ${data.dxy < 100 ? "bullish" : "bearish"}">
-                        <div class="stat-value">${data.dxy}</div>
-                        <div class="stat-label">DXY (Dollar Index)</div>
-                        <div class="signal-badge ${data.dxy < 100 ? "bull" : "bear"}">
-                            ${data.dxy < 100 ? "✅ Bullish" : "❌ Bearish"}
-                        </div>
+                const dailyCard = document.getElementById("dailyPrediction");
+                dailyCard.className = "prediction-card " + daily.className;
+                dailyCard.innerHTML = `
+                    <div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">DAILY (24h)</div>
+                        <div style="font-size: 2.5em; margin-bottom: 5px;">${daily.emoji}</div>
+                        <div style="font-size: 1.5em; font-weight: bold;">${daily.sentiment}</div>
                     </div>
-                    <div class="stat-box ${data.gold < 3000 ? "bullish" : "bearish"}">
-                        <div class="stat-value">$${data.gold}</div>
-                        <div class="stat-label">Gold</div>
-                        <div class="signal-badge ${data.gold < 3000 ? "bull" : "bear"}">
-                            ${data.gold < 3000 ? "✅ Bullish" : "❌ Bearish"}
-                        </div>
-                    </div>
-                    <div class="stat-box ${data.vix < 20 ? "bullish" : "bearish"}">
-                        <div class="stat-value">${data.vix}</div>
-                        <div class="stat-label">VIX (Fear Index)</div>
-                        <div class="signal-badge ${data.vix < 20 ? "bull" : "bear"}">
-                            ${data.vix < 20 ? "✅ Bullish" : "❌ Bearish"}
-                        </div>
-                    </div>
-                    <div class="stat-box ${data.rut > 2500 ? "bullish" : "bearish"}">
-                        <div class="stat-value">${data.rut.toLocaleString()}</div>
-                        <div class="stat-label">Russell 2000</div>
-                        <div class="signal-badge ${data.rut > 2500 ? "bull" : "bear"}">
-                            ${data.rut > 2500 ? "✅ Bullish" : "❌ Bearish"}
-                        </div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value">${data.us10y}%</div>
-                        <div class="stat-label">US 10Y Yield</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value">${data.us2y}%</div>
-                        <div class="stat-label">US 2Y Yield</div>
-                    </div>
+                    <div style="font-size: 2em; font-weight: bold;">$${daily.price.toLocaleString()}</div>
                 `;
 
-                const predictions = generatePredictions(data.bitcoin.price, data.bitcoin.change24h);
-                document.getElementById("predTomorrow").textContent = "$" + predictions.tomorrow.toLocaleString();
-                document.getElementById("predWeek").textContent = "$" + predictions.week.toLocaleString();
-                document.getElementById("predMonth").textContent = "$" + predictions.month.toLocaleString();
+                const weeklyCard = document.getElementById("weeklyPrediction");
+                weeklyCard.className = "prediction-card " + weekly.className;
+                weeklyCard.innerHTML = `
+                    <div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">WEEKLY (7 days)</div>
+                        <div style="font-size: 2.5em; margin-bottom: 5px;">${weekly.emoji}</div>
+                        <div style="font-size: 1.5em; font-weight: bold;">${weekly.sentiment}</div>
+                    </div>
+                    <div style="font-size: 2em; font-weight: bold;">$${weekly.price.toLocaleString()}</div>
+                `;
+
+                const monthlyCard = document.getElementById("monthlyPrediction");
+                monthlyCard.className = "prediction-card " + monthly.className;
+                monthlyCard.innerHTML = `
+                    <div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">MONTHLY (30 days)</div>
+                        <div style="font-size: 2.5em; margin-bottom: 5px;">${monthly.emoji}</div>
+                        <div style="font-size: 1.5em; font-weight: bold;">${monthly.sentiment}</div>
+                    </div>
+                    <div style="font-size: 2em; font-weight: bold;">$${monthly.price.toLocaleString()}</div>
+                `;
+
+                // Macro Indicators
+                const m = data.marketData;
+                
+                document.getElementById("spxValue").textContent = m.spx.toLocaleString();
+                document.getElementById("spxStatus").textContent = m.spx > 5700 ? "✅ Risk-On" : "❌ Risk-Off";
+                document.getElementById("spxBox").className = m.spx > 5700 ? "macro-box bullish" : "macro-box bearish";
+
+                document.getElementById("dxyValue").textContent = m.dxy;
+                document.getElementById("dxyStatus").textContent = m.dxy < 105 ? "✅ Bullish" : "❌ Bearish";
+                document.getElementById("dxyBox").className = m.dxy < 105 ? "macro-box bullish" : "macro-box bearish";
+
+                document.getElementById("goldValue").textContent = "$" + m.gold;
+                document.getElementById("goldStatus").textContent = m.gold > 2600 && m.gold < 3000 ? "✅ Bullish" : "❌ Bearish";
+                document.getElementById("goldBox").className = m.gold > 2600 && m.gold < 3000 ? "macro-box bullish" : "macro-box bearish";
+
+                document.getElementById("rutValue").textContent = m.rut.toLocaleString();
+                document.getElementById("rutStatus").textContent = m.rut > 2500 ? "✅ Risk-On" : "❌ Risk-Off";
+                document.getElementById("rutBox").className = m.rut > 2500 ? "macro-box bullish" : "macro-box bearish";
+
+                document.getElementById("vixValue").textContent = m.vix;
+                document.getElementById("vixStatus").textContent = m.vix < 20 ? "✅ Low Fear" : "❌ High Fear";
+                document.getElementById("vixBox").className = m.vix < 20 ? "macro-box bullish" : "macro-box bearish";
+
+                document.getElementById("rrpValue").textContent = "$" + data.fedData.rrp + "B";
+                document.getElementById("rrpStatus").textContent = data.fedData.rrp < 300 ? "✅ High Liquidity" : "❌ Low Liquidity";
+                document.getElementById("rrpBox").className = data.fedData.rrp < 300 ? "macro-box bullish" : "macro-box bearish";
+
+                // Fed Data
+                document.getElementById("fedRate").textContent = data.fedData.fedFunds.toFixed(2) + "%";
+                document.getElementById("cutProb").textContent = (data.fedData.fedCutProbability * 100).toFixed(0) + "%";
+                document.getElementById("nextMeeting").textContent = data.fedData.nextMeetingDate;
+                document.getElementById("fedBalance").textContent = "$" + data.fedData.fedBalance + "B";
+                
+                const qtEl = document.getElementById("qtStatus");
+                if (data.fedData.qtActive) {
+                    qtEl.textContent = "🔴 QT Active";
+                    qtEl.style.background = "#ef4444";
+                } else {
+                    qtEl.textContent = "🟢 QE Active";
+                    qtEl.style.background = "#10b981";
+                }
+
+                // Summary
+                let bullish = 0;
+                if (m.spx > 5700) bullish++;
+                if (m.dxy < 105) bullish++;
+                if (m.gold > 2600 && m.gold < 3000) bullish++;
+                if (m.rut > 2500) bullish++;
+                if (m.vix < 20) bullish++;
+                if (data.fedData.rrp < 300) bullish++;
+
+                const score = bullish;
+                let summary;
+                if (score >= 5) summary = "🚀 VERY BULLISH - Strong macro support for Bitcoin!";
+                else if (score >= 4) summary = "📈 BULLISH - Favorable conditions for risk assets";
+                else if (score >= 3) summary = "⚖️ NEUTRAL - Mixed signals across markets";
+                else if (score >= 2) summary = "📉 BEARISH - Challenging macro environment";
+                else summary = "⚠️ VERY BEARISH - Significant headwinds present";
+
+                document.getElementById("summaryText").textContent = summary;
 
             } catch (error) {
-                console.error("Error fetching data:", error);
+                console.error("Error:", error);
                 document.getElementById("statusBadge").className = "status error";
                 document.getElementById("statusBadge").textContent = "🔴 ERROR";
             }
         }
 
         window.addEventListener("load", () => {
-            initChart();
             fetchMarketData();
             setInterval(fetchMarketData, 5000);
         });
