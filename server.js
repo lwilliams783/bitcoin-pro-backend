@@ -45,18 +45,28 @@ const [btcData, goldData, yahooData] = await Promise.all([
         .catch(() => null);
     }),
   
-  // Gold from MetalpriceAPI (REAL current prices!)
-  fetch("https://api.metalpriceapi.com/v1/latest?api_key=demo&base=USD&currencies=XAU")
+  // Gold from GoldAPI.io (FREE, ACCURATE)
+  fetch("https://www.goldapi.io/api/XAU/USD")
     .then(r => r.json())
     .then(data => {
-      // MetalpriceAPI returns price per troy ounce in reverse (USD per XAU)
-      const goldPrice = 1 / data.rates.XAU;
-      console.log("✅ MetalpriceAPI Gold:", Math.round(goldPrice));
+      const goldPrice = data.price || 2650;
+      console.log("✅ Gold API price:", goldPrice);
       return { price: goldPrice };
     })
     .catch(() => {
-      console.warn("⚠️ Gold API failed, using realistic fallback");
-      return { price: 4600 }; // Updated realistic fallback
+      console.warn("⚠️ Gold API failed, trying Yahoo Finance...");
+      // Fallback to Yahoo Finance Gold futures
+      return fetch("https://query1.finance.yahoo.com/v8/finance/chart/GC%3DF?interval=1d&range=1d")
+        .then(r => r.json())
+        .then(data => {
+          const price = data?.chart?.result?.[0]?.meta?.regularMarketPrice || 2650;
+          console.log("✅ Yahoo Gold:", price);
+          return { price: Math.round(price) };
+        })
+        .catch(() => {
+          console.warn("⚠️ All gold sources failed, using fallback");
+          return { price: 2650 };
+        });
     }),
   
   // Yahoo Finance for DXY, Russell 2000, VIX
