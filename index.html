@@ -228,7 +228,7 @@
         </div>
     </div>
 
-    <button onclick="fetchMarketData()">🔄 Refresh Now</button>
+    <button onclick="window.refreshData()">🔄 Refresh Now</button>
 
     <div style="text-align: center; padding: 25px; opacity: 0.7; font-size: 0.85em;">
         <p>📊 Auto-updates every 5 seconds</p>
@@ -436,6 +436,9 @@
         connectWS(); // Start WebSocket
         fetchMarketData(); // Fetch macro data
         setInterval(fetchMarketData, 5000); // Update every 5 seconds
+        
+        // Expose to global scope for button onclick
+        window.refreshData = fetchMarketData;
     }); // End DOMContentLoaded
 </script>
 ```
