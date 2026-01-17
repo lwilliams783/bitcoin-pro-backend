@@ -240,36 +240,32 @@
     const BACKEND_URL = "https://bitcoin-pro-backend.onrender.com";
     let ws = null;
 
-    // Initialize Binance WebSocket for REAL-TIME Bitcoin price
+    // Initialize Binance WebSocket with EXACT working code from ChatGPT
     function initBinanceWebSocket() {
         try {
-            ws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@trade');
+            ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
             
             ws.onopen = () => {
-                console.log('✅ Binance WebSocket connected - Real-time BTC active!');
+                console.log("✅ Binance WS connected");
             };
             
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
-                const price = Math.round(parseFloat(data.p)); // Trade price
-                const volume = parseFloat(data.q || 0); // Quantity
-                
-                // Update Bitcoin price INSTANTLY
-                document.getElementById("btcPrice").textContent = "$" + price.toLocaleString();
-                
-                console.log('🔥 BTC Price Update:', price);
+                const price = parseFloat(data.p).toFixed(2);
+                document.getElementById("btcPrice").innerText = `$${parseFloat(price).toLocaleString()}`;
+                console.log("🔥 BTC Price:", price);
             };
             
-            ws.onerror = (error) => {
-                console.error('❌ Binance WebSocket error:', error);
+            ws.onerror = (err) => {
+                console.error("❌ WS Error", err);
             };
             
             ws.onclose = () => {
-                console.log('⚠️ Binance WebSocket closed, reconnecting in 5s...');
+                console.warn("⚠️ WS closed — attempting reconnect in 5s");
                 setTimeout(initBinanceWebSocket, 5000);
             };
         } catch (error) {
-            console.error('Failed to initialize Binance WebSocket:', error);
+            console.error("Failed to initialize WebSocket:", error);
         }
     }
 
@@ -297,9 +293,9 @@
 
             document.getElementById("lastUpdate").textContent = new Date().toLocaleTimeString();
 
-            // Update Bitcoin data from backend (WebSocket only shows trade price)
-            if (data.bitcoin && data.bitcoin.price) {
-                document.getElementById("btcPrice").textContent = "$" + data.bitcoin.price.toLocaleString();
+            // Bitcoin price is updated by WebSocket, backend just provides other data
+            // Only update 24h change, volume, and market cap from backend if available
+            if (data.bitcoin) {
                 const changeEl = document.getElementById("btcChange");
                 changeEl.textContent = (data.bitcoin.change24h > 0 ? "+" : "") + data.bitcoin.change24h + "%";
                 changeEl.style.color = data.bitcoin.change24h >= 0 ? "#10b981" : "#ef4444";
