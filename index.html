@@ -239,35 +239,89 @@
 <script>
     // Wait for DOM to be fully loaded before running ANY code
     document.addEventListener("DOMContentLoaded", () => {
-        const BACKEND_URL = "https://bitcoin-pro-backend.onrender.com";
+        const BACKEND_URL = "https://bitcoin-pro-backend-1.onrender.com";
         let ws = null;
+        let wsConnected = false;
+        let restFallbackInterval = null;
+        let lastWSUpdate = 0; // Track when we last got WS data
 
-        // Initialize Binance WebSocket - ChatGPT's exact fix
+        // Fetch initial BTC price immediately (Fix #3)
+        (async () => {
+            try {
+                const r = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
+                const d = await r.json();
+                document.getElementById("btcPrice").innerText = `$${Number(d.price).toLocaleString()}`;
+                console.log("⚡ Initial BTC price loaded:", d.price);
+            } catch (e) {
+                console.error("Failed to load initial BTC price:", e);
+            }
+        })();
+
+        // REST fallback for iPhone - polls backend if WebSocket fails
+        function startRESTFallback() {
+            if (restFallbackInterval) return; // Already running
+            
+            console.log("📱 Starting REST fallback for mobile...");
+            restFallbackInterval = setInterval(async () => {
+                // Only use REST if WS hasn't sent data in 4 seconds (Fix #2)
+                if (Date.now() - lastWSUpdate < 4000) return;
+                
+                try {
+                    const response = await fetch(`${BACKEND_URL}/markets`);
+                    const data = await response.json();
+                    if (data.bitcoin && data.bitcoin.price) {
+                        document.getElementById("btcPrice").innerText = `$${data.bitcoin.price.toLocaleString()}`;
+                        console.log("📱 REST fallback price:", data.bitcoin.price);
+                    }
+                } catch (error) {
+                    console.error("REST fallback failed:", error);
+                }
+            }, 3000); // Every 3 seconds when WebSocket is down
+        }
+
+        // Initialize Binance WebSocket
         function connectWS() {
             try {
                 ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
                 
                 ws.onopen = () => {
                     console.log("✅ Binance WS connected");
+                    wsConnected = true;
                 };
                 
                 ws.onmessage = (event) => {
-                    const data = JSON.parse(event.data);
-                    const price = parseFloat(data.p).toFixed(2);
-                    document.getElementById("btcPrice").innerText = `$${parseFloat(price).toLocaleString()}`;
-                    console.log("🔥 BTC Price:", price);
+                    try {
+                        const data = JSON.parse(event.data);
+                        const price = Number(data.p);
+
+                        if (!price || isNaN(price)) return;
+
+                        lastWSUpdate = Date.now(); // Track last successful message
+                        wsConnected = true;
+
+                        document.getElementById("btcPrice").innerText = `$${price.toLocaleString()}`;
+                        console.log("🔥 BTC Price (WS):", price);
+                    } catch (e) {
+                        console.error("WS parse error", e);
+                    }
                 };
                 
                 ws.onerror = (err) => {
                     console.error("❌ WS Error", err);
+                    wsConnected = false;
+                    startRESTFallback(); // Start polling
                 };
                 
                 ws.onclose = () => {
-                    console.warn("⚠️ WS closed — reconnecting in 5s");
-                    setTimeout(connectWS, 5000);
+                    console.warn("⚠️ WS closed — starting REST fallback");
+                    wsConnected = false;
+                    startRESTFallback(); // Start polling immediately
+                    setTimeout(connectWS, 5000); // Try to reconnect
                 };
             } catch (error) {
                 console.error("Failed to initialize WebSocket:", error);
+                wsConnected = false;
+                startRESTFallback();
             }
         }
 
