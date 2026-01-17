@@ -243,7 +243,7 @@
     // Initialize Binance WebSocket for REAL-TIME Bitcoin price
     function initBinanceWebSocket() {
         try {
-            ws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker');
+            ws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@trade');
             
             ws.onopen = () => {
                 console.log('✅ Binance WebSocket connected - Real-time BTC active!');
@@ -251,22 +251,13 @@
             
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
-                const price = Math.round(parseFloat(data.c)); // Current price
-                const change = parseFloat(data.P).toFixed(2); // 24h change %
-                const volume = parseFloat(data.v); // Volume in BTC
+                const price = Math.round(parseFloat(data.p)); // Trade price
+                const volume = parseFloat(data.q || 0); // Quantity
                 
                 // Update Bitcoin price INSTANTLY
                 document.getElementById("btcPrice").textContent = "$" + price.toLocaleString();
                 
-                // Update 24h change
-                const changeEl = document.getElementById("btcChange");
-                changeEl.textContent = (change > 0 ? "+" : "") + change + "%";
-                changeEl.style.color = change >= 0 ? "#10b981" : "#ef4444";
-                
-                // Update volume and market cap
-                const volumeUSD = (volume * price) / 1000000000;
-                document.getElementById("btcVolume").textContent = "$" + volumeUSD.toFixed(1) + "B";
-                document.getElementById("btcMarketCap").textContent = "$" + (price * 19.5 / 1000).toFixed(2) + "T";
+                console.log('🔥 BTC Price Update:', price);
             };
             
             ws.onerror = (error) => {
@@ -306,8 +297,15 @@
 
             document.getElementById("lastUpdate").textContent = new Date().toLocaleTimeString();
 
-            // Bitcoin price is updated by WebSocket, so we skip it here
-            // Just fetch macro indicators and predictions from backend
+            // Update Bitcoin data from backend (WebSocket only shows trade price)
+            if (data.bitcoin && data.bitcoin.price) {
+                document.getElementById("btcPrice").textContent = "$" + data.bitcoin.price.toLocaleString();
+                const changeEl = document.getElementById("btcChange");
+                changeEl.textContent = (data.bitcoin.change24h > 0 ? "+" : "") + data.bitcoin.change24h + "%";
+                changeEl.style.color = data.bitcoin.change24h >= 0 ? "#10b981" : "#ef4444";
+                document.getElementById("btcVolume").textContent = "$" + data.bitcoin.volume24h + "B";
+                document.getElementById("btcMarketCap").textContent = "$" + data.bitcoin.marketCap + "T";
+            }
 
             const daily = calculatePrediction(data.bitcoin.price, data.bitcoin.change24h, 1);
             const weekly = calculatePrediction(data.bitcoin.price, data.bitcoin.change24h, 7);
