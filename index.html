@@ -237,39 +237,41 @@
 </div>
 
 <script>
-    const BACKEND_URL = "https://bitcoin-pro-backend.onrender.com";
-    let ws = null;
+    // Wait for DOM to be fully loaded before running ANY code
+    document.addEventListener("DOMContentLoaded", () => {
+        const BACKEND_URL = "https://bitcoin-pro-backend.onrender.com";
+        let ws = null;
 
-    // Initialize Binance WebSocket with EXACT working code from ChatGPT
-    function initBinanceWebSocket() {
-        try {
-            ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
-            
-            ws.onopen = () => {
-                console.log("✅ Binance WS connected");
-            };
-            
-            ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                const price = parseFloat(data.p).toFixed(2);
-                document.getElementById("btcPrice").innerText = `$${parseFloat(price).toLocaleString()}`;
-                console.log("🔥 BTC Price:", price);
-            };
-            
-            ws.onerror = (err) => {
-                console.error("❌ WS Error", err);
-            };
-            
-            ws.onclose = () => {
-                console.warn("⚠️ WS closed — attempting reconnect in 5s");
-                setTimeout(initBinanceWebSocket, 5000);
-            };
-        } catch (error) {
-            console.error("Failed to initialize WebSocket:", error);
+        // Initialize Binance WebSocket - ChatGPT's exact fix
+        function connectWS() {
+            try {
+                ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
+                
+                ws.onopen = () => {
+                    console.log("✅ Binance WS connected");
+                };
+                
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    const price = parseFloat(data.p).toFixed(2);
+                    document.getElementById("btcPrice").innerText = `$${parseFloat(price).toLocaleString()}`;
+                    console.log("🔥 BTC Price:", price);
+                };
+                
+                ws.onerror = (err) => {
+                    console.error("❌ WS Error", err);
+                };
+                
+                ws.onclose = () => {
+                    console.warn("⚠️ WS closed — reconnecting in 5s");
+                    setTimeout(connectWS, 5000);
+                };
+            } catch (error) {
+                console.error("Failed to initialize WebSocket:", error);
+            }
         }
-    }
 
-    function calculatePrediction(price, change, days) {
+        function calculatePrediction(price, change, days) {
         const volatility = Math.abs(change) / 100;
         const trend = change > 0 ? 1 : -1;
         const prediction = price * (1 + (trend * volatility * days * (Math.random() * 0.3 + 0.7)));
@@ -376,11 +378,11 @@
         }
     }
 
-    window.addEventListener("load", () => {
-        initBinanceWebSocket(); // Start real-time Bitcoin feed
-        fetchMarketData(); // Fetch other market data
-        setInterval(fetchMarketData, 5000); // Update macro data every 5 seconds
-    });
+        // Start everything when page loads
+        connectWS(); // Start WebSocket
+        fetchMarketData(); // Fetch macro data
+        setInterval(fetchMarketData, 5000); // Update every 5 seconds
+    }); // End DOMContentLoaded
 </script>
 ```
 
