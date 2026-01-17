@@ -1,6 +1,11 @@
 import express from "express";
 import fetch from "node-fetch";
 import cors from "cors";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,8 +17,51 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(express.static(__dirname));
 
-// Bitcoin price endpoint
+// Main markets endpoint that frontend expects
+app.get("/markets", async (req, res) => {
+  try {
+    const btcResponse = await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT");
+    const btcData = await btcResponse.json();
+    
+    const [spx, dxy, gold, rut, vix] = await Promise.all([
+      fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d&range=1d").then(r => r.json()),
+      fetch("https://query1.finance.yahoo.com/v8/finance/chart/DX-Y.NYB?interval=1d&range=1d").then(r => r.json()),
+      fetch("https://query1.finance.yahoo.com/v8/finance/chart/GC%3DF?interval=1d&range=1d").then(r => r.json()),
+      fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5ERUT?interval=1d&range=1d").then(r => r.json()),
+      fetch("https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?interval=1d&range=1d").then(r => r.json())
+    ]);
+
+    res.json({
+      bitcoin: {
+        price: parseFloat(btcData.lastPrice),
+        change24h: parseFloat(btcData.priceChangePercent),
+        volume24h: (parseFloat(btcData.volume) / 1000000000).toFixed(2),
+        marketCap: ((parseFloat(btcData.lastPrice) * 19500000) / 1000000000000).toFixed(2)
+      },
+      marketData: {
+        spx: Math.round(spx.chart.result[0].meta.regularMarketPrice),
+        dxy: dxy.chart.result[0].meta.regularMarketPrice.toFixed(2),
+        gold: Math.round(gold.chart.result[0].meta.regularMarketPrice),
+        rut: Math.round(rut.chart.result[0].meta.regularMarketPrice),
+        vix: vix.chart.result[0].meta.regularMarketPrice.toFixed(2)
+      },
+      fedData: {
+        rrp: 450,
+        fedFunds: 4.50,
+        fedCutProbability: 0.65,
+        nextMeetingDate: "Jan 29, 2025",
+        fedBalance: 7200,
+        qtActive: true
+      }
+    });
+  } catch (error) {
+    console.error("Error in /markets endpoint:", error);
+    res.status(500).json({ error: "Failed to fetch market data" });
+  }
+});
+
 app.get("/api/bitcoin-price", async (req, res) => {
   try {
     const response = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
@@ -25,7 +73,6 @@ app.get("/api/bitcoin-price", async (req, res) => {
   }
 });
 
-// Stock market data endpoint
 app.get("/api/stock/:symbol", async (req, res) => {
   try {
     const { symbol } = req.params;
@@ -45,23 +92,6 @@ app.get("/api/stock/:symbol", async (req, res) => {
     console.error(`Error fetching stock data for ${req.params.symbol}:`, error);
     res.status(500).json({ error: `Failed to fetch stock data for ${req.params.symbol}` });
   }
-});
-
-// Fed Funds Rate endpoint
-app.get("/api/fed-rate", async (req, res) => {
-  try {
-    const response = await fetch("https://api.stlouisfed.org/fred/series/observations?series_id=FEDFUNDS&api_key=YOUR_FRED_API_KEY&file_type=json&sort_order=desc&limit=1");
-    const data = await response.json();
-    const rate = parseFloat(data.observations[0].value);
-    res.json({ rate });
-  } catch (error) {
-    console.error("Error fetching Fed rate:", error);
-    res.status(500).json({ error: "Failed to fetch Fed rate" });
-  }
-});
-
-app.get("/", (req, res) => {
-  res.json({ message: "Bitcoin Pro Backend API" });
 });
 
 app.listen(PORT, () => {
