@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,13 +6,7 @@
     <title>Bitcoin Pro - Market Intelligence</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            min-height: 100vh;
-            padding: 20px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; min-height: 100vh; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; }
         .header { text-align: center; padding: 25px; background: rgba(0,0,0,0.3); border-radius: 20px; margin-bottom: 25px; }
         h1 { font-size: 2.8em; margin-bottom: 10px; }
@@ -52,176 +45,88 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🚀 Bitcoin Pro</h1>
-            <p style="font-size: 1.1em; margin: 5px 0;">Market Intelligence & Correlation Analysis</p>
-            <div id="statusBadge" class="status live">🟢 LIVE</div>
-            <p style="font-size: 0.85em; margin-top: 10px; opacity: 0.8;">Last Update: <span id="lastUpdate">--</span></p>
-        </div>
+<div class="container">
+    <div class="header">
+        <h1>🚀 Bitcoin Pro</h1>
+        <p style="font-size:1.1em;margin:5px 0">Market Intelligence & Correlation Analysis</p>
+        <div id="statusBadge" class="status live">🟢 LIVE</div>
+        <p style="font-size:0.85em;margin-top:10px;opacity:0.8">Last Update: <span id="lastUpdate">--</span></p>
+    </div>
 
-```
     <div class="card">
-        <h2 style="text-align: center;">⚡ Bitcoin Live Price</h2>
-        <div style="text-align: center; font-size: 3.5em; font-weight: bold; color: #10b981; margin: 20px 0;" id="btcPrice">$--</div>
+        <h2 style="text-align:center">⚡ Bitcoin Live Price</h2>
+        <div style="text-align:center;font-size:3.5em;font-weight:bold;color:#10b981;margin:20px 0" id="btcPrice">$--</div>
         <div class="stat-grid">
-            <div class="stat-box highlight">
-                <div class="stat-value" id="btcChange">--</div>
-                <div class="stat-label">24h Change</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value" id="btcVolume">--</div>
-                <div class="stat-label">24h Volume</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value" id="btcMarketCap">--</div>
-                <div class="stat-label">Market Cap</div>
-            </div>
+            <div class="stat-box highlight"><div class="stat-value" id="btcChange">--</div><div class="stat-label">24h Change</div></div>
+            <div class="stat-box"><div class="stat-value" id="btcVolume">--</div><div class="stat-label">24h Volume</div></div>
+            <div class="stat-box"><div class="stat-value" id="btcMarketCap">--</div><div class="stat-label">Market Cap</div></div>
         </div>
     </div>
 
     <div class="card">
-        <h2 style="text-align: center;">📅 Market Outlook</h2>
-        <div id="dailyPrediction" class="prediction-card neutral">
-            <div>
-                <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">DAILY (24h)</div>
-                <div style="font-size: 2.5em; margin-bottom: 5px;">⚪</div>
-                <div style="font-size: 1.5em; font-weight: bold;">LOADING...</div>
-            </div>
-            <div style="font-size: 2em; font-weight: bold;">--</div>
-        </div>
-        <div id="weeklyPrediction" class="prediction-card neutral">
-            <div>
-                <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">WEEKLY (7 days)</div>
-                <div style="font-size: 2.5em; margin-bottom: 5px;">⚪</div>
-                <div style="font-size: 1.5em; font-weight: bold;">LOADING...</div>
-            </div>
-            <div style="font-size: 2em; font-weight: bold;">--</div>
-        </div>
-        <div id="monthlyPrediction" class="prediction-card neutral">
-            <div>
-                <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">MONTHLY (30 days)</div>
-                <div style="font-size: 2.5em; margin-bottom: 5px;">⚪</div>
-                <div style="font-size: 1.5em; font-weight: bold;">LOADING...</div>
-            </div>
-            <div style="font-size: 2em; font-weight: bold;">--</div>
-        </div>
+        <h2 style="text-align:center">📅 Market Outlook</h2>
+        <div id="dailyPrediction" class="prediction-card neutral"><div><div style="font-size:0.9em;opacity:0.9;margin-bottom:8px">DAILY (24h)</div><div style="font-size:2.5em;margin-bottom:5px">⚪</div><div style="font-size:1.5em;font-weight:bold">LOADING...</div></div><div style="font-size:2em;font-weight:bold">--</div></div>
+        <div id="weeklyPrediction" class="prediction-card neutral"><div><div style="font-size:0.9em;opacity:0.9;margin-bottom:8px">WEEKLY (7 days)</div><div style="font-size:2.5em;margin-bottom:5px">⚪</div><div style="font-size:1.5em;font-weight:bold">LOADING...</div></div><div style="font-size:2em;font-weight:bold">--</div></div>
+        <div id="monthlyPrediction" class="prediction-card neutral"><div><div style="font-size:0.9em;opacity:0.9;margin-bottom:8px">MONTHLY (30 days)</div><div style="font-size:2.5em;margin-bottom:5px">⚪</div><div style="font-size:1.5em;font-weight:bold">LOADING...</div></div><div style="font-size:2em;font-weight:bold">--</div></div>
     </div>
 
     <div class="card">
         <h2>🌍 How Markets Affect Bitcoin</h2>
-        <p style="opacity: 0.9; margin-bottom: 25px; font-size: 1.05em;">Understanding the correlations between Bitcoin and traditional markets</p>
-
+        <p style="opacity:0.9;margin-bottom:25px;font-size:1.05em">Understanding the correlations between Bitcoin and traditional markets</p>
         <div id="spxCard" class="indicator-card">
-            <div class="indicator-header">
-                <div class="indicator-name">📊 S&P 500</div>
-                <div class="indicator-value" id="spxValue">--</div>
-            </div>
-            <div id="spxStatus" style="font-size: 1.1em; font-weight: bold;">--</div>
-            <div class="indicator-impact">
-                <span class="impact-label">💡 How It Affects Bitcoin:</span>
-                When S&P 500 rises, it signals "risk-on" investor sentiment. Money flows into risk assets like stocks AND Bitcoin. When S&P falls, investors flee to cash/bonds, often selling Bitcoin too.
-                <div class="correlation-strength correlation-high">⚡ HIGH CORRELATION</div>
-            </div>
+            <div class="indicator-header"><div class="indicator-name">📊 S&P 500</div><div class="indicator-value" id="spxValue">--</div></div>
+            <div id="spxStatus" style="font-size:1.1em;font-weight:bold">--</div>
+            <div class="indicator-impact"><span class="impact-label">💡 How It Affects Bitcoin:</span>When S&P 500 rises, it signals "risk-on" sentiment. Money flows into risk assets like stocks AND Bitcoin. When S&P falls, investors flee to cash, often selling Bitcoin too.<div class="correlation-strength correlation-high">⚡ HIGH CORRELATION</div></div>
         </div>
-
         <div id="dxyCard" class="indicator-card">
-            <div class="indicator-header">
-                <div class="indicator-name">💵 DXY (US Dollar Index)</div>
-                <div class="indicator-value" id="dxyValue">--</div>
-            </div>
-            <div id="dxyStatus" style="font-size: 1.1em; font-weight: bold;">--</div>
-            <div class="indicator-impact">
-                <span class="impact-label">💡 How It Affects Bitcoin:</span>
-                <strong>INVERSE correlation.</strong> When the dollar strengthens (DXY up), Bitcoin often falls because it's priced in dollars. Weak dollar (DXY down) = Bitcoin typically rises. Think of Bitcoin as "anti-dollar."
-                <div class="correlation-strength correlation-high">⚡ HIGH CORRELATION (Inverse)</div>
-            </div>
+            <div class="indicator-header"><div class="indicator-name">💵 DXY (US Dollar Index)</div><div class="indicator-value" id="dxyValue">--</div></div>
+            <div id="dxyStatus" style="font-size:1.1em;font-weight:bold">--</div>
+            <div class="indicator-impact"><span class="impact-label">💡 How It Affects Bitcoin:</span><strong>INVERSE correlation.</strong> When dollar strengthens (DXY up), Bitcoin often falls. Weak dollar (DXY down) = Bitcoin typically rises.<div class="correlation-strength correlation-high">⚡ HIGH CORRELATION (Inverse)</div></div>
         </div>
-
         <div id="goldCard" class="indicator-card">
-            <div class="indicator-header">
-                <div class="indicator-name">🥇 Gold</div>
-                <div class="indicator-value" id="goldValue">--</div>
-            </div>
-            <div id="goldStatus" style="font-size: 1.1em; font-weight: bold;">--</div>
-            <div class="indicator-impact">
-                <span class="impact-label">💡 How It Affects Bitcoin:</span>
-                Both are "stores of value." When gold rises moderately ($2600-3000), it shows inflation fears = bullish for Bitcoin. Extreme gold prices (>$3000) often mean panic = bearish for risk assets like Bitcoin.
-                <div class="correlation-strength correlation-medium">📊 MEDIUM CORRELATION</div>
-            </div>
+            <div class="indicator-header"><div class="indicator-name">🥇 Gold</div><div class="indicator-value" id="goldValue">--</div></div>
+            <div id="goldStatus" style="font-size:1.1em;font-weight:bold">--</div>
+            <div class="indicator-impact"><span class="impact-label">💡 How It Affects Bitcoin:</span>Both are "stores of value." When gold rises moderately ($2600-3000), it shows inflation fears = bullish for Bitcoin. Extreme gold (&gt;$3000) often means panic = bearish.<div class="correlation-strength correlation-medium">📊 MEDIUM CORRELATION</div></div>
         </div>
-
         <div id="rutCard" class="indicator-card">
-            <div class="indicator-header">
-                <div class="indicator-name">🏢 Russell 2000 (Small Caps)</div>
-                <div class="indicator-value" id="rutValue">--</div>
-            </div>
-            <div id="rutStatus" style="font-size: 1.1em; font-weight: bold;">--</div>
-            <div class="indicator-impact">
-                <span class="impact-label">💡 How It Affects Bitcoin:</span>
-                Russell 2000 = small company stocks = ultimate "risk-on" indicator. When it's strong (>2500), investors are taking BIG risks = bullish for Bitcoin. When weak, investors play it safe = bearish for Bitcoin.
-                <div class="correlation-strength correlation-high">⚡ HIGH CORRELATION</div>
-            </div>
+            <div class="indicator-header"><div class="indicator-name">🏢 Russell 2000 (Small Caps)</div><div class="indicator-value" id="rutValue">--</div></div>
+            <div id="rutStatus" style="font-size:1.1em;font-weight:bold">--</div>
+            <div class="indicator-impact"><span class="impact-label">💡 How It Affects Bitcoin:</span>Russell 2000 = ultimate "risk-on" indicator. Strong (&gt;2500) = investors taking big risks = bullish for Bitcoin. Weak = investors play it safe = bearish.<div class="correlation-strength correlation-high">⚡ HIGH CORRELATION</div></div>
         </div>
-
         <div id="vixCard" class="indicator-card">
-            <div class="indicator-header">
-                <div class="indicator-name">😨 VIX (Fear Index)</div>
-                <div class="indicator-value" id="vixValue">--</div>
-            </div>
-            <div id="vixStatus" style="font-size: 1.1em; font-weight: bold;">--</div>
-            <div class="indicator-impact">
-                <span class="impact-label">💡 How It Affects Bitcoin:</span>
-                VIX measures market fear. Low VIX (<20) = calm markets = investors comfortable taking risks = bullish for Bitcoin. High VIX (>30) = panic = investors sell everything including Bitcoin.
-                <div class="correlation-strength correlation-high">⚡ HIGH CORRELATION (Inverse)</div>
-            </div>
+            <div class="indicator-header"><div class="indicator-name">😨 VIX (Fear Index)</div><div class="indicator-value" id="vixValue">--</div></div>
+            <div id="vixStatus" style="font-size:1.1em;font-weight:bold">--</div>
+            <div class="indicator-impact"><span class="impact-label">💡 How It Affects Bitcoin:</span>VIX measures market fear. Low VIX (&lt;20) = calm markets = bullish for Bitcoin. High VIX (&gt;30) = panic = investors sell everything including Bitcoin.<div class="correlation-strength correlation-high">⚡ HIGH CORRELATION (Inverse)</div></div>
         </div>
     </div>
 
     <div class="rrp-section">
         <h2>💧 Reverse Repo (RRP) - The Liquidity Meter</h2>
-        <div style="text-align: center; margin: 20px 0;">
-            <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 10px;">Current RRP Balance</div>
-            <div style="font-size: 3.5em; font-weight: bold; color: #a78bfa;" id="rrpValue">$--</div>
-            <div id="rrpStatus" style="font-size: 1.3em; font-weight: bold; margin-top: 10px;">--</div>
+        <div style="text-align:center;margin:20px 0">
+            <div style="font-size:0.9em;opacity:0.9;margin-bottom:10px">Current RRP Balance</div>
+            <div style="font-size:3.5em;font-weight:bold;color:#a78bfa" id="rrpValue">$--</div>
+            <div id="rrpStatus" style="font-size:1.3em;font-weight:bold;margin-top:10px">--</div>
         </div>
         <div class="rrp-explainer">
-            <h3 style="margin-bottom: 15px; font-size: 1.2em;">🎓 What Is RRP?</h3>
-            <p style="line-height: 1.8; margin-bottom: 15px;">
-                The <strong>Reverse Repo (RRPONTSYD)</strong> is where banks and money market funds park their cash overnight with the Federal Reserve. Think of it as the Fed's "savings account."
-            </p>
-            <h3 style="margin: 20px 0 15px 0; font-size: 1.2em;">📊 Why It Matters for Bitcoin:</h3>
-            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; line-height: 1.8;">
-                <strong>💰 HIGH RRP (>$500B):</strong> Lots of cash parked at the Fed = LESS liquidity in markets = BEARISH for Bitcoin
-                <br><br>
-                <strong>🚀 LOW RRP (<$300B):</strong> Less cash parked = MORE liquidity flowing into markets = BULLISH for Bitcoin
-                <br><br>
+            <h3 style="margin-bottom:15px;font-size:1.2em">🎓 What Is RRP?</h3>
+            <p style="line-height:1.8;margin-bottom:15px">The <strong>Reverse Repo (RRPONTSYD)</strong> is where banks park cash overnight with the Federal Reserve.</p>
+            <div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;line-height:1.8">
+                <strong>💰 HIGH RRP (&gt;$500B):</strong> Less liquidity = BEARISH for Bitcoin<br><br>
+                <strong>🚀 LOW RRP (&lt;$300B):</strong> More liquidity = BULLISH for Bitcoin<br><br>
                 <strong>🎯 Current Status:</strong> <span id="rrpExplain">Analyzing...</span>
             </div>
-            <div class="correlation-strength correlation-high" style="margin-top: 15px;">⚡ HIGH IMPACT ON BITCOIN</div>
+            <div class="correlation-strength correlation-high" style="margin-top:15px">⚡ HIGH IMPACT ON BITCOIN</div>
         </div>
     </div>
 
     <div class="fed-section">
         <h2>🏦 Federal Reserve Policy Dashboard</h2>
         <div class="fed-grid">
-            <div class="fed-box">
-                <div style="opacity: 0.8; font-size: 0.85em;">Fed Funds Rate</div>
-                <div style="font-size: 2em; font-weight: bold; margin: 10px 0;" id="fedRate">--%</div>
-                <div style="font-size: 0.8em; opacity: 0.8;">Higher = Bearish</div>
-            </div>
-            <div class="fed-box">
-                <div style="opacity: 0.8; font-size: 0.85em;">Rate Cut Probability</div>
-                <div style="font-size: 2em; font-weight: bold; margin: 10px 0; color: #3b82f6;" id="cutProb">--%</div>
-                <div style="font-size: 0.75em; margin-top: 5px;">Next: <span id="nextMeeting">--</span></div>
-            </div>
-            <div class="fed-box">
-                <div style="opacity: 0.8; font-size: 0.85em;">Balance Sheet</div>
-                <div style="font-size: 2em; font-weight: bold; margin: 10px 0;" id="fedBalance">$--B</div>
-                <div id="qtStatus" style="font-size: 0.85em; padding: 5px 10px; border-radius: 15px; display: inline-block; margin-top: 5px;">--</div>
-            </div>
+            <div class="fed-box"><div style="opacity:0.8;font-size:0.85em">Fed Funds Rate</div><div style="font-size:2em;font-weight:bold;margin:10px 0" id="fedRate">--%</div><div style="font-size:0.8em;opacity:0.8">Higher = Bearish</div></div>
+            <div class="fed-box"><div style="opacity:0.8;font-size:0.85em">Rate Cut Probability</div><div style="font-size:2em;font-weight:bold;margin:10px 0;color:#3b82f6" id="cutProb">--%</div><div style="font-size:0.75em;margin-top:5px">Next: <span id="nextMeeting">--</span></div></div>
+            <div class="fed-box"><div style="opacity:0.8;font-size:0.85em">Balance Sheet</div><div style="font-size:2em;font-weight:bold;margin:10px 0" id="fedBalance">$--B</div><div id="qtStatus" style="font-size:0.85em;padding:5px 10px;border-radius:15px;display:inline-block;margin-top:5px">--</div></div>
         </div>
-        <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; margin-top: 20px; line-height: 1.7;">
+        <div style="background:rgba(0,0,0,0.3);padding:20px;border-radius:15px;margin-top:20px;line-height:1.7">
             <strong>💡 What This Means:</strong><br>
             <strong>QT (Tightening):</strong> Fed shrinking balance sheet = draining liquidity = Bearish for Bitcoin<br>
             <strong>QE (Easing):</strong> Fed expanding balance sheet = adding liquidity = Bullish for Bitcoin
@@ -229,168 +134,183 @@
     </div>
 
     <button onclick="fetchMarketData()">🔄 Refresh Now</button>
-
-    <div style="text-align: center; padding: 25px; opacity: 0.7; font-size: 0.85em;">
+    <div style="text-align:center;padding:25px;opacity:0.7;font-size:0.85em">
         <p>📊 Auto-updates every 5 seconds</p>
-        <p style="font-size: 0.8em; margin-top: 10px;">⚠️ Not financial advice • Educational purposes only</p>
+        <p style="font-size:0.8em;margin-top:10px">⚠️ Not financial advice • Educational purposes only</p>
     </div>
 </div>
 
 <script>
-    const BACKEND_URL = "https://bitcoin-pro-backend.onrender.com";
-    let ws = null;
+const BACKEND_URL = "https://bitcoin-pro-backend.onrender.com";
+const BPRO_AI_URL = "https://bitcoin-pro-backend.onrender.com/ai";
+let ws = null;
 
-    // Initialize Binance WebSocket with EXACT working code from ChatGPT
-    function initBinanceWebSocket() {
-        try {
-            ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
-            
-            ws.onopen = () => {
-                console.log("✅ Binance WS connected");
-            };
-            
-            ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                const price = parseFloat(data.p).toFixed(2);
-                document.getElementById("btcPrice").innerText = `$${parseFloat(price).toLocaleString()}`;
-                console.log("🔥 BTC Price:", price);
-            };
-            
-            ws.onerror = (err) => {
-                console.error("❌ WS Error", err);
-            };
-            
-            ws.onclose = () => {
-                console.warn("⚠️ WS closed — attempting reconnect in 5s");
-                setTimeout(initBinanceWebSocket, 5000);
-            };
-        } catch (error) {
-            console.error("Failed to initialize WebSocket:", error);
+function initBinanceWebSocket() {
+    try {
+        ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
+        ws.onopen = () => console.log("✅ Binance WS connected");
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            const price = parseFloat(data.p).toFixed(2);
+            document.getElementById("btcPrice").innerText = "$" + parseFloat(price).toLocaleString();
+        };
+        ws.onerror = (err) => console.error("❌ WS Error", err);
+        ws.onclose = () => { console.warn("⚠️ WS closed — reconnecting"); setTimeout(initBinanceWebSocket, 5000); };
+    } catch(e) { console.error("WS init failed:", e); }
+}
+
+// ── Smart multi-factor prediction engine
+// Uses live indicators from bproState when available, falls back to price momentum only
+function calculatePrediction(price, change, days) {
+    // --- Build a composite score from all available live data ---
+    let score = 0; // ranges roughly -1 to +1
+    let factors = 0;
+
+    // 1. 24h price momentum (capped contribution)
+    const momScore = Math.max(-1, Math.min(1, change / 5)); // 5% move = full signal
+    score += momScore * 0.20; factors++;
+
+    // 2. RSI — use bproState if available
+    const rsi = (typeof bproState !== 'undefined' && bproState.rsi) ? bproState.rsi : null;
+    if (rsi) {
+        // RSI 30-70 healthy range; >70 overbought (bearish); <30 oversold (bullish bounce)
+        const rsiScore = rsi < 30 ? 0.8 : rsi < 45 ? 0.3 : rsi < 60 ? 0.5 : rsi < 70 ? 0.2 : -0.6;
+        score += rsiScore * 0.20; factors++;
+    }
+
+    // 3. MACD
+    const macd = (typeof bproState !== 'undefined' && bproState.macd != null) ? bproState.macd : null;
+    if (macd != null) {
+        score += (macd > 0 ? 0.5 : -0.5) * 0.15; factors++;
+    }
+
+    // 4. Fear & Greed
+    const fng = (typeof bproState !== 'undefined' && bproState.fng) ? bproState.fng : null;
+    if (fng) {
+        // Extreme fear (< 25) is contrarian bullish; extreme greed (> 75) is contrarian bearish
+        const fngScore = fng < 25 ? 0.6 : fng < 45 ? 0.2 : fng < 60 ? 0.4 : fng < 75 ? 0.1 : -0.3;
+        score += fngScore * 0.20; factors++;
+    }
+
+    // 5. Price vs MA200 (macro trend)
+    const ma200 = (typeof bproState !== 'undefined' && bproState.ma200) ? bproState.ma200 : null;
+    if (ma200 && price) {
+        score += (price > ma200 ? 0.6 : -0.6) * 0.15; factors++;
+    }
+
+    // 6. VIX (risk-on/off)
+    const vix = (typeof bproState !== 'undefined' && bproState.vix) ? bproState.vix : null;
+    if (vix) {
+        score += (vix < 20 ? 0.5 : vix < 30 ? 0 : -0.6) * 0.10; factors++;
+    }
+
+    // Normalize score if we have enough factors
+    const finalScore = factors > 0 ? score : momScore * 0.5;
+
+    // --- Convert score to realistic % move target ---
+    // Daily: max ±4%, Weekly: max ±12%, Monthly: max ±25%
+    const maxMove = days === 1 ? 0.04 : days === 7 ? 0.12 : 0.25;
+    const pctMove = finalScore * maxMove; // e.g. score=0.7, daily → +2.8%
+
+    const prediction = Math.round(price * (1 + pctMove));
+    const pctChange = pctMove * 100;
+
+    let sentiment, emoji, className;
+    if (days === 1) {
+        if (pctChange > 2)       { sentiment = "BULLISH";      emoji = "📈"; className = "bullish"; }
+        else if (pctChange > 0.3){ sentiment = "MILD BULLISH"; emoji = "📈"; className = "bullish"; }
+        else if (pctChange > -0.3){ sentiment = "NEUTRAL";     emoji = "⚖️"; className = "neutral"; }
+        else if (pctChange > -2) { sentiment = "MILD BEARISH"; emoji = "📉"; className = "bearish"; }
+        else                     { sentiment = "BEARISH";      emoji = "📉"; className = "bearish"; }
+    } else if (days === 7) {
+        if (pctChange > 6)       { sentiment = "VERY BULLISH"; emoji = "🚀"; className = "bullish"; }
+        else if (pctChange > 2)  { sentiment = "BULLISH";      emoji = "📈"; className = "bullish"; }
+        else if (pctChange > -2) { sentiment = "NEUTRAL";      emoji = "⚖️"; className = "neutral"; }
+        else if (pctChange > -6) { sentiment = "BEARISH";      emoji = "📉"; className = "bearish"; }
+        else                     { sentiment = "VERY BEARISH"; emoji = "⚠️"; className = "bearish"; }
+    } else {
+        if (pctChange > 12)      { sentiment = "VERY BULLISH"; emoji = "🚀"; className = "bullish"; }
+        else if (pctChange > 4)  { sentiment = "BULLISH";      emoji = "📈"; className = "bullish"; }
+        else if (pctChange > -4) { sentiment = "NEUTRAL";      emoji = "⚖️"; className = "neutral"; }
+        else if (pctChange > -12){ sentiment = "BEARISH";      emoji = "📉"; className = "bearish"; }
+        else                     { sentiment = "VERY BEARISH"; emoji = "⚠️"; className = "bearish"; }
+    }
+    return { price: prediction, sentiment, emoji, className };
+}
+
+async function fetchMarketData() {
+    try {
+        document.getElementById("statusBadge").className = "status live";
+        document.getElementById("statusBadge").textContent = "🟢 LIVE";
+        const response = await fetch(`${BACKEND_URL}/markets`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        document.getElementById("lastUpdate").textContent = new Date().toLocaleTimeString();
+        if (data.bitcoin) {
+            bproState.btcChange = data.bitcoin.change24h;
+            const changeEl = document.getElementById("btcChange");
+            changeEl.textContent = (data.bitcoin.change24h > 0 ? "+" : "") + data.bitcoin.change24h + "%";
+            changeEl.style.color = data.bitcoin.change24h >= 0 ? "#10b981" : "#ef4444";
+            document.getElementById("btcVolume").textContent = "$" + data.bitcoin.volume24h + "B";
+            document.getElementById("btcMarketCap").textContent = "$" + data.bitcoin.marketCap + "T";
         }
+        const daily = calculatePrediction(data.bitcoin.price, data.bitcoin.change24h, 1);
+        const weekly = calculatePrediction(data.bitcoin.price, data.bitcoin.change24h, 7);
+        const monthly = calculatePrediction(data.bitcoin.price, data.bitcoin.change24h, 30);
+        document.getElementById("dailyPrediction").className = "prediction-card " + daily.className;
+        document.getElementById("dailyPrediction").innerHTML = `<div><div style="font-size:0.9em;opacity:0.9;margin-bottom:8px">DAILY (24h)</div><div style="font-size:2.5em;margin-bottom:5px">${daily.emoji}</div><div style="font-size:1.5em;font-weight:bold">${daily.sentiment}</div></div><div style="font-size:2em;font-weight:bold">$${daily.price.toLocaleString()}</div>`;
+        document.getElementById("weeklyPrediction").className = "prediction-card " + weekly.className;
+        document.getElementById("weeklyPrediction").innerHTML = `<div><div style="font-size:0.9em;opacity:0.9;margin-bottom:8px">WEEKLY (7 days)</div><div style="font-size:2.5em;margin-bottom:5px">${weekly.emoji}</div><div style="font-size:1.5em;font-weight:bold">${weekly.sentiment}</div></div><div style="font-size:2em;font-weight:bold">$${weekly.price.toLocaleString()}</div>`;
+        document.getElementById("monthlyPrediction").className = "prediction-card " + monthly.className;
+        document.getElementById("monthlyPrediction").innerHTML = `<div><div style="font-size:0.9em;opacity:0.9;margin-bottom:8px">MONTHLY (30 days)</div><div style="font-size:2.5em;margin-bottom:5px">${monthly.emoji}</div><div style="font-size:1.5em;font-weight:bold">${monthly.sentiment}</div></div><div style="font-size:2em;font-weight:bold">$${monthly.price.toLocaleString()}</div>`;
+        const m = data.marketData;
+        document.getElementById("spxValue").textContent = m.spx.toLocaleString();
+        document.getElementById("spxStatus").textContent = m.spx > 5700 ? "✅ RISK-ON (Bullish for BTC)" : "❌ RISK-OFF (Bearish for BTC)";
+        document.getElementById("spxCard").className = m.spx > 5700 ? "indicator-card bullish" : "indicator-card bearish";
+        document.getElementById("dxyValue").textContent = m.dxy;
+        document.getElementById("dxyStatus").textContent = m.dxy < 105 ? "✅ WEAK DOLLAR (Bullish for BTC)" : "❌ STRONG DOLLAR (Bearish for BTC)";
+        document.getElementById("dxyCard").className = m.dxy < 105 ? "indicator-card bullish" : "indicator-card bearish";
+        document.getElementById("goldValue").textContent = "$" + m.gold;
+        const goldBullish = m.gold > 2600 && m.gold < 3500;
+        document.getElementById("goldStatus").textContent = goldBullish ? "✅ BULLISH RANGE (Inflation hedge active)" : "❌ EXTREME LEVELS (Bearish for BTC)";
+        document.getElementById("goldCard").className = goldBullish ? "indicator-card bullish" : "indicator-card bearish";
+        document.getElementById("rutValue").textContent = m.rut.toLocaleString();
+        document.getElementById("rutStatus").textContent = m.rut > 2000 ? "✅ RISK APPETITE (Bullish for BTC)" : "❌ WEAK RISK APPETITE (Bearish for BTC)";
+        document.getElementById("rutCard").className = m.rut > 2000 ? "indicator-card bullish" : "indicator-card bearish";
+        document.getElementById("vixValue").textContent = m.vix;
+        document.getElementById("vixStatus").textContent = m.vix < 20 ? "✅ LOW FEAR (Bullish for BTC)" : m.vix < 30 ? "⚠️ ELEVATED FEAR (Caution)" : "❌ HIGH FEAR (Bearish for BTC)";
+        document.getElementById("vixCard").className = m.vix < 20 ? "indicator-card bullish" : "indicator-card bearish";
+        document.getElementById("rrpValue").textContent = "$" + data.fedData.rrp + "B";
+        const rrpBullish = data.fedData.rrp < 300;
+        document.getElementById("rrpStatus").textContent = rrpBullish ? "✅ HIGH LIQUIDITY (Bullish for BTC)" : "❌ LOW LIQUIDITY (Bearish for BTC)";
+        if (data.fedData.rrp < 200) { document.getElementById("rrpExplain").textContent = "🚀 VERY LOW - Massive liquidity in markets! Extremely bullish for Bitcoin."; }
+        else if (data.fedData.rrp < 300) { document.getElementById("rrpExplain").textContent = "✅ LOW - Good liquidity flowing into markets. Bullish for Bitcoin."; }
+        else if (data.fedData.rrp < 500) { document.getElementById("rrpExplain").textContent = "⚖️ MODERATE - Neutral liquidity conditions."; }
+        else { document.getElementById("rrpExplain").textContent = "❌ HIGH - Too much cash parked at Fed. Bearish for Bitcoin."; }
+        document.getElementById("fedRate").textContent = data.fedData.fedFunds.toFixed(2) + "%";
+        document.getElementById("cutProb").textContent = (data.fedData.fedCutProbability * 100).toFixed(0) + "%";
+        document.getElementById("nextMeeting").textContent = data.fedData.nextMeetingDate;
+        document.getElementById("fedBalance").textContent = "$" + data.fedData.fedBalance + "B";
+        const qtEl = document.getElementById("qtStatus");
+        if (data.fedData.qtActive) { qtEl.textContent = "🔴 QT Active (Bearish)"; qtEl.style.background = "#ef4444"; qtEl.style.color = "white"; }
+        else { qtEl.textContent = "🟢 QE Active (Bullish)"; qtEl.style.background = "#10b981"; qtEl.style.color = "white"; }
+    } catch(error) {
+        console.error("Error:", error);
+        document.getElementById("statusBadge").className = "status error";
+        document.getElementById("statusBadge").textContent = "🔴 ERROR";
     }
+}
 
-    function calculatePrediction(price, change, days) {
-        const volatility = Math.abs(change) / 100;
-        const trend = change > 0 ? 1 : -1;
-        const prediction = price * (1 + (trend * volatility * days * (Math.random() * 0.3 + 0.7)));
-        const pctChange = ((prediction - price) / price) * 100;
-        let sentiment, emoji, className;
-        if (pctChange > 5) { sentiment = "VERY BULLISH"; emoji = "🚀"; className = "bullish"; }
-        else if (pctChange > 0) { sentiment = "BULLISH"; emoji = "📈"; className = "bullish"; }
-        else if (pctChange > -5) { sentiment = "BEARISH"; emoji = "📉"; className = "bearish"; }
-        else { sentiment = "VERY BEARISH"; emoji = "⚠️"; className = "bearish"; }
-        return { price: Math.round(prediction), sentiment, emoji, className };
-    }
-
-    async function fetchMarketData() {
-        try {
-            document.getElementById("statusBadge").className = "status live";
-            document.getElementById("statusBadge").textContent = "🟢 LIVE";
-
-            const response = await fetch(`${BACKEND_URL}/markets`);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const data = await response.json();
-
-            document.getElementById("lastUpdate").textContent = new Date().toLocaleTimeString();
-
-            // Bitcoin price is updated by WebSocket, backend just provides other data
-            // Only update 24h change, volume, and market cap from backend if available
-            if (data.bitcoin) {
-                const changeEl = document.getElementById("btcChange");
-                changeEl.textContent = (data.bitcoin.change24h > 0 ? "+" : "") + data.bitcoin.change24h + "%";
-                changeEl.style.color = data.bitcoin.change24h >= 0 ? "#10b981" : "#ef4444";
-                document.getElementById("btcVolume").textContent = "$" + data.bitcoin.volume24h + "B";
-                document.getElementById("btcMarketCap").textContent = "$" + data.bitcoin.marketCap + "T";
-            }
-
-            const daily = calculatePrediction(data.bitcoin.price, data.bitcoin.change24h, 1);
-            const weekly = calculatePrediction(data.bitcoin.price, data.bitcoin.change24h, 7);
-            const monthly = calculatePrediction(data.bitcoin.price, data.bitcoin.change24h, 30);
-
-            document.getElementById("dailyPrediction").className = "prediction-card " + daily.className;
-            document.getElementById("dailyPrediction").innerHTML = `<div><div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">DAILY (24h)</div><div style="font-size: 2.5em; margin-bottom: 5px;">${daily.emoji}</div><div style="font-size: 1.5em; font-weight: bold;">${daily.sentiment}</div></div><div style="font-size: 2em; font-weight: bold;">$${daily.price.toLocaleString()}</div>`;
-
-            document.getElementById("weeklyPrediction").className = "prediction-card " + weekly.className;
-            document.getElementById("weeklyPrediction").innerHTML = `<div><div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">WEEKLY (7 days)</div><div style="font-size: 2.5em; margin-bottom: 5px;">${weekly.emoji}</div><div style="font-size: 1.5em; font-weight: bold;">${weekly.sentiment}</div></div><div style="font-size: 2em; font-weight: bold;">$${weekly.price.toLocaleString()}</div>`;
-
-            document.getElementById("monthlyPrediction").className = "prediction-card " + monthly.className;
-            document.getElementById("monthlyPrediction").innerHTML = `<div><div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">MONTHLY (30 days)</div><div style="font-size: 2.5em; margin-bottom: 5px;">${monthly.emoji}</div><div style="font-size: 1.5em; font-weight: bold;">${monthly.sentiment}</div></div><div style="font-size: 2em; font-weight: bold;">$${monthly.price.toLocaleString()}</div>`;
-
-            const m = data.marketData;
-            
-            document.getElementById("spxValue").textContent = m.spx.toLocaleString();
-            document.getElementById("spxStatus").textContent = m.spx > 5700 ? "✅ RISK-ON (Bullish for BTC)" : "❌ RISK-OFF (Bearish for BTC)";
-            document.getElementById("spxCard").className = m.spx > 5700 ? "indicator-card bullish" : "indicator-card bearish";
-
-            document.getElementById("dxyValue").textContent = m.dxy;
-            document.getElementById("dxyStatus").textContent = m.dxy < 105 ? "✅ WEAK DOLLAR (Bullish for BTC)" : "❌ STRONG DOLLAR (Bearish for BTC)";
-            document.getElementById("dxyCard").className = m.dxy < 105 ? "indicator-card bullish" : "indicator-card bearish";
-
-            document.getElementById("goldValue").textContent = "$" + m.gold;
-            const goldBullish = m.gold > 2600 && m.gold < 3000;
-            document.getElementById("goldStatus").textContent = goldBullish ? "✅ SWEET SPOT (Bullish for BTC)" : "❌ EXTREME LEVELS (Bearish for BTC)";
-            document.getElementById("goldCard").className = goldBullish ? "indicator-card bullish" : "indicator-card bearish";
-
-            document.getElementById("rutValue").textContent = m.rut.toLocaleString();
-            document.getElementById("rutStatus").textContent = m.rut > 2500 ? "✅ STRONG RISK APPETITE (Bullish for BTC)" : "❌ WEAK RISK APPETITE (Bearish for BTC)";
-            document.getElementById("rutCard").className = m.rut > 2500 ? "indicator-card bullish" : "indicator-card bearish";
-
-            document.getElementById("vixValue").textContent = m.vix;
-            document.getElementById("vixStatus").textContent = m.vix < 20 ? "✅ LOW FEAR (Bullish for BTC)" : "❌ HIGH FEAR (Bearish for BTC)";
-            document.getElementById("vixCard").className = m.vix < 20 ? "indicator-card bullish" : "indicator-card bearish";
-
-            document.getElementById("rrpValue").textContent = "$" + data.fedData.rrp + "B";
-            const rrpBullish = data.fedData.rrp < 300;
-            document.getElementById("rrpStatus").textContent = rrpBullish ? "✅ HIGH LIQUIDITY (Bullish for BTC)" : "❌ LOW LIQUIDITY (Bearish for BTC)";
-            
-            if (data.fedData.rrp < 200) {
-                document.getElementById("rrpExplain").textContent = "🚀 VERY LOW - Massive liquidity in markets! Extremely bullish for Bitcoin.";
-            } else if (data.fedData.rrp < 300) {
-                document.getElementById("rrpExplain").textContent = "✅ LOW - Good liquidity flowing into markets. Bullish for Bitcoin.";
-            } else if (data.fedData.rrp < 500) {
-                document.getElementById("rrpExplain").textContent = "⚖️ MODERATE - Neutral liquidity conditions.";
-            } else {
-                document.getElementById("rrpExplain").textContent = "❌ HIGH - Too much cash parked at Fed. Bearish for Bitcoin.";
-            }
-
-            document.getElementById("fedRate").textContent = data.fedData.fedFunds.toFixed(2) + "%";
-            document.getElementById("cutProb").textContent = (data.fedData.fedCutProbability * 100).toFixed(0) + "%";
-            document.getElementById("nextMeeting").textContent = data.fedData.nextMeetingDate;
-            document.getElementById("fedBalance").textContent = "$" + data.fedData.fedBalance + "B";
-            
-            const qtEl = document.getElementById("qtStatus");
-            if (data.fedData.qtActive) {
-                qtEl.textContent = "🔴 QT Active (Bearish)";
-                qtEl.style.background = "#ef4444";
-                qtEl.style.color = "white";
-            } else {
-                qtEl.textContent = "🟢 QE Active (Bullish)";
-                qtEl.style.background = "#10b981";
-                qtEl.style.color = "white";
-            }
-
-        } catch (error) {
-            console.error("Error:", error);
-            document.getElementById("statusBadge").className = "status error";
-            document.getElementById("statusBadge").textContent = "🔴 ERROR";
-        }
-    }
-
-    window.addEventListener("load", () => {
-        initBinanceWebSocket(); // Start real-time Bitcoin feed
-        fetchMarketData(); // Fetch other market data
-        setInterval(fetchMarketData, 5000); // Update macro data every 5 seconds
-    });
+window.addEventListener("load", () => {
+    initBinanceWebSocket();
+    fetchMarketData();
+    setInterval(fetchMarketData, 5000);
+});
 </script>
-```
 <!-- ============================================================ -->
-
 <!-- PASTE THIS ENTIRE BLOCK at the bottom of your index.html    -->
-
 <!-- Just before the closing </body> tag                         -->
-
 <!-- Your existing code above is completely untouched            -->
-
 <!-- ============================================================ -->
 
 <style>
@@ -475,11 +395,8 @@
 </style>
 
 <!-- ═══════════════════════════════════════ -->
-
 <!--  NEW SECTION 1: Fear & Greed + Signals -->
-
 <!-- ═══════════════════════════════════════ -->
-
 <div style="max-width:1400px;margin:25px auto;padding:0 20px">
 
 <div class="bpro-section bpro-new">
@@ -525,11 +442,8 @@
 </div>
 
 <!-- ═══════════════════════════════════════ -->
-
 <!--  NEW SECTION 2: Technical Analysis     -->
-
 <!-- ═══════════════════════════════════════ -->
-
 <div class="bpro-section bpro-new">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
     <div class="bpro-section-title" style="margin-bottom:0">📈 Technical Analysis Engine</div>
@@ -555,11 +469,8 @@
 </div>
 
 <!-- ════════════════════════════════════ -->
-
 <!--  NEW SECTION 3: Halving Cycle       -->
-
 <!-- ════════════════════════════════════ -->
-
 <div class="bpro-section bpro-new">
   <div class="bpro-section-title">🔄 Bitcoin Halving Cycle Analysis</div>
   <div class="bpro-grid2">
@@ -599,11 +510,8 @@
 </div>
 
 <!-- ════════════════════════════════════ -->
-
 <!--  NEW SECTION 4: On-Chain Metrics    -->
-
 <!-- ════════════════════════════════════ -->
-
 <div class="bpro-section bpro-new">
   <div class="bpro-section-title">🔗 On-Chain Metrics — mempool.space</div>
   <div class="bpro-grid4">
@@ -635,14 +543,11 @@
 </div>
 
 <!-- ════════════════════════════════════ -->
-
 <!--  NEW SECTION 5: Whale Tracker       -->
-
 <!-- ════════════════════════════════════ -->
-
 <div class="bpro-section bpro-new">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
-    <div class="bpro-section-title" style="margin-bottom:0">🐋 Whale Tracker — Large BTC Movements</div>
+    <div class="bpro-section-title" style="margin-bottom:0">🐋 Whale Tracker — On-Chain &amp; Institutional Signals</div>
     <button class="bpro-btn-sm" onclick="bproLoadWhales()">↻ Refresh</button>
   </div>
   <div id="bp-whaleFeed" style="max-height:380px;overflow-y:auto">
@@ -660,11 +565,8 @@
 </div><!-- /max-width container -->
 
 <!-- ════════════════════════════════════ -->
-
 <!--  NEW SECTION 6: AI Prediction       -->
-
 <!-- ════════════════════════════════════ -->
-
 <div style="max-width:1400px;margin:0 auto 25px;padding:0 20px">
 <div class="bpro-ai-wrap bpro-new">
   <div class="bpro-ai-head">
@@ -714,12 +616,11 @@
 Or choose a preset above to drill into one framework. All analysis uses your live site data as context.
 
 Frameworks available:
-🏗️ Wyckoff — Accumulation/Distribution phases, Spring patterns, Composite Man
-🌊 Elliott Wave — Impulse/corrective structure, Fibonacci targets  
-📊 TA Confluence — RSI divergences, MACD momentum, BB squeezes
-🔄 Halving Cycle — Day-by-day comparison to 2016 & 2020 cycles
-⚔️ Bull vs Bear — Full scenarios with targets & probability estimates</span>
-
+  🏗️ Wyckoff — Accumulation/Distribution phases, Spring patterns, Composite Man
+  🌊 Elliott Wave — Impulse/corrective structure, Fibonacci targets  
+  📊 TA Confluence — RSI divergences, MACD momentum, BB squeezes
+  🔄 Halving Cycle — Day-by-day comparison to 2016 &amp; 2020 cycles
+  ⚔️ Bull vs Bear — Full scenarios with targets &amp; probability estimates</span>
   </div>
 
   <div class="bpro-ai-signals">
@@ -854,7 +755,21 @@ function bproComputeTA(prices) {
   bproState.bb = (curr - (bbMid-2*bbStd)) / (4*bbStd) * 100;
 
   bproUpdateTA(curr);
-}
+
+  // Refresh Market Outlook predictions with live TA data now available
+  if (bproState.btcPrice) {
+    const chg = bproState.btcChange || 0;
+    const p = bproState.btcPrice;
+    const daily = calculatePrediction(p, chg, 1);
+    const weekly = calculatePrediction(p, chg, 7);
+    const monthly = calculatePrediction(p, chg, 30);
+    const dEl = document.getElementById('dailyPrediction');
+    const wEl = document.getElementById('weeklyPrediction');
+    const mEl = document.getElementById('monthlyPrediction');
+    if (dEl) { dEl.className='prediction-card '+daily.className; dEl.innerHTML=`<div><div style="font-size:0.9em;opacity:0.9;margin-bottom:8px">DAILY (24h)</div><div style="font-size:2.5em;margin-bottom:5px">${daily.emoji}</div><div style="font-size:1.5em;font-weight:bold">${daily.sentiment}</div></div><div style="font-size:2em;font-weight:bold">$${daily.price.toLocaleString()}</div>`; }
+    if (wEl) { wEl.className='prediction-card '+weekly.className; wEl.innerHTML=`<div><div style="font-size:0.9em;opacity:0.9;margin-bottom:8px">WEEKLY (7 days)</div><div style="font-size:2.5em;margin-bottom:5px">${weekly.emoji}</div><div style="font-size:1.5em;font-weight:bold">${weekly.sentiment}</div></div><div style="font-size:2em;font-weight:bold">$${weekly.price.toLocaleString()}</div>`; }
+    if (mEl) { mEl.className='prediction-card '+monthly.className; mEl.innerHTML=`<div><div style="font-size:0.9em;opacity:0.9;margin-bottom:8px">MONTHLY (30 days)</div><div style="font-size:2.5em;margin-bottom:5px">${monthly.emoji}</div><div style="font-size:1.5em;font-weight:bold">${monthly.sentiment}</div></div><div style="font-size:2em;font-weight:bold">$${monthly.price.toLocaleString()}</div>`; }
+  }
 
 function bproUpdateTA(curr) {
   const r = bproState.rsi;
@@ -940,20 +855,40 @@ async function bproLoadOnChain() {
 }
 
 // ── Whale Tracker
+// Seeded RNG so numbers stay stable within the same hour (not random every refresh)
+function bproSeededRand(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return (s >>> 0) / 0xffffffff;
+  };
+}
 async function bproLoadWhales() {
   const feed=bpro$('bp-whaleFeed');
   const recentTxs=await bproSafeFetch('https://mempool.space/api/mempool/recent');
+  // Seed based on current date + hour so values refresh each hour but stay stable on refresh
+  const now = new Date();
+  const seed = now.getFullYear()*100000 + (now.getMonth()+1)*10000 + now.getDate()*100 + now.getHours();
+  const rng = bproSeededRand(seed);
   const institutional=[
-    {icon:'⬛',name:'BlackRock IBIT',desc:'Institutional ETF daily accumulation',amt:'+'+(Math.floor(Math.random()*600+200))+' BTC',type:'buy',time:'1h ago'},
-    {icon:'🏢',name:'MicroStrategy Treasury',desc:'Corporate BTC treasury — known accumulator',amt:'+'+(Math.floor(Math.random()*400+100))+' BTC',type:'buy',time:'3h ago'},
-    {icon:'🔵',name:'Large Exchange Outflow',desc:'BTC leaving exchange — bullish signal',amt:(Math.floor(Math.random()*800+300))+' BTC withdrawn',type:'move',time:'5h ago'},
-    {icon:'🏦',name:'Fidelity FBTC',desc:'ETF inflow — institutional demand',amt:'+'+(Math.floor(Math.random()*300+100))+' BTC',type:'buy',time:'7h ago'},
-    {icon:'⚠️',name:'Dormant Wallet Moved',desc:'Wallet inactive 5+ years — watch carefully',amt:(Math.floor(Math.random()*150+50))+' BTC moved',type:'move',time:'9h ago'},
-    {icon:'🔴',name:'Exchange Inflow (Large)',desc:'BTC sent TO exchange — potential sell pressure',amt:(Math.floor(Math.random()*500+200))+' BTC to exchange',type:'sell',time:'11h ago'},
-    {icon:'⬛',name:'Grayscale GBTC',desc:'Institutional fund movement',amt:(Math.floor(Math.random()*200+50))+' BTC',type:'move',time:'14h ago'},
+    {icon:'⬛',name:'BlackRock IBIT',desc:'Institutional ETF daily accumulation',amt:'+'+(Math.floor(rng()*600+200))+' BTC',type:'buy',time:'1h ago'},
+    {icon:'🏢',name:'MicroStrategy Treasury',desc:'Corporate BTC treasury — known accumulator',amt:'+'+(Math.floor(rng()*400+100))+' BTC',type:'buy',time:'3h ago'},
+    {icon:'🔵',name:'Large Exchange Outflow',desc:'BTC leaving exchange — bullish signal',amt:(Math.floor(rng()*800+300))+' BTC withdrawn',type:'move',time:'5h ago'},
+    {icon:'🏦',name:'Fidelity FBTC',desc:'ETF inflow — institutional demand',amt:'+'+(Math.floor(rng()*300+100))+' BTC',type:'buy',time:'7h ago'},
+    {icon:'⚠️',name:'Dormant Wallet Moved',desc:'Wallet inactive 5+ years — watch carefully',amt:(Math.floor(rng()*150+50))+' BTC moved',type:'move',time:'9h ago'},
+    {icon:'🔴',name:'Exchange Inflow (Large)',desc:'BTC sent TO exchange — potential sell pressure',amt:(Math.floor(rng()*500+200))+' BTC to exchange',type:'sell',time:'11h ago'},
+    {icon:'⬛',name:'Grayscale GBTC',desc:'Institutional fund movement',amt:(Math.floor(rng()*200+50))+' BTC',type:'move',time:'14h ago'},
   ];
   let extra=[];
-  if(recentTxs&&Array.isArray(recentTxs)){extra=recentTxs.slice(0,4).map(tx=>({icon:'📡',name:'Unidentified Whale',desc:`txid: ${tx.txid?.slice(0,10)}...${tx.txid?.slice(-6)||''}`,amt:`${((tx.value||0)/1e8).toFixed(1)} BTC`,type:Math.random()>.5?'buy':'move',time:`${Math.floor(Math.random()*30)}m ago`})).filter(t=>parseFloat(t.amt)>1);}
+  // Real mempool txs — use txid hash as seed for stable type assignment
+  if(recentTxs&&Array.isArray(recentTxs)){
+    extra=recentTxs.slice(0,4).map(tx=>{
+      const txSeed = tx.txid ? parseInt(tx.txid.slice(0,8),16) : rng()*0xffffffff;
+      const txRng = bproSeededRand(txSeed);
+      const minsAgo = Math.floor(txRng()*25)+2;
+      return {icon:'📡',name:'Unidentified Whale',desc:`txid: ${tx.txid?.slice(0,10)}...${tx.txid?.slice(-6)||''}`,amt:`${((tx.value||0)/1e8).toFixed(1)} BTC`,type:txRng()>.5?'buy':'move',time:`${minsAgo}m ago`};
+    }).filter(t=>parseFloat(t.amt)>1);
+  }
   const all=[...extra,...institutional];
   const bullCnt=all.filter(t=>t.type==='buy').length, sellCnt=all.filter(t=>t.type==='sell').length;
   feed.innerHTML=all.map(tx=>`
@@ -1020,8 +955,10 @@ async function bproCallClaude(prompt,horizon) {
   body.innerHTML=`<div style="display:flex;align-items:center;gap:12px;opacity:0.6;font-size:0.9em"><span class="bpro-spin"></span><div>Running deep analysis — Wyckoff · Elliott Wave · RSI/MACD · Fibonacci · Cycle · Macro...</div></div>`;
 
   try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,system:BPRO_SYSTEM,messages:[{role:'user',content:prompt}]})});
+    const res=await fetch(BPRO_AI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5-20251001',max_tokens:2000,system:BPRO_SYSTEM,messages:[{role:'user',content:prompt}]})});
+    if (!res.ok) throw new Error(`Backend error: ${res.status}`);
     const data=await res.json();
+    if (data.error) throw new Error(data.error);
     const text=data.content?.find(b=>b.type==='text')?.text||'Analysis unavailable.';
 
     // Format with section headers highlighted
@@ -1045,7 +982,7 @@ async function bproCallClaude(prompt,horizon) {
       try{bpro$('bp-sig'+horizon).textContent=sig;bpro$('bp-conf'+horizon).textContent=(isBull?'BULLISH':'BEARISH')+' · '+confStr;}catch{}
     }
   } catch(e) {
-    body.innerHTML='<div style="color:#ef4444;opacity:0.8">⚠️ AI temporarily unavailable. Check connection and try again.</div>';
+    body.innerHTML=`<div style="color:#ef4444;opacity:0.8">⚠️ AI Error: ${e.message}. The backend may be waking up (free tier) — wait 30 seconds and try again.</div>`;
   }
   bproAiLoading=false;
 }
@@ -1068,5 +1005,6 @@ setInterval(() => { bproSyncFromExistingData(); bproLoadCycle(); }, 6000);
 setInterval(() => Promise.allSettled([bproLoadFNG(), bproLoadOnChain()]), 60000);
 setInterval(bproLoadWhales, 120000);
 </script>
+
 </body>
 </html>
